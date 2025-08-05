@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CineRec - Movie & Series Rating Website
+
+A modern movie and TV series rating and recommendation website built with Next.js, TypeScript, and Tailwind CSS.
+
+## Features
+
+- 🎬 **Real Movie Data**: Integrated with TMDB API for latest movies and series
+- 📱 **Responsive Design**: Mobile-first approach with beautiful UI
+- ⚡ **Fast Performance**: Built with Next.js 14 and optimized images
+- 🎨 **Modern UI**: Dark theme with smooth animations and hover effects
+- 🔍 **Search Functionality**: Search through movies and series
+- 📊 **Rating System**: View and rate movies with star ratings
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ 
+- npm or yarn
+- TMDB API key
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <your-repo-url>
+cd front
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables:
+   - Copy `.env.local.example` to `.env.local`
+   - Get your TMDB API key from [https://www.themoviedb.org/settings/api](https://www.themoviedb.org/settings/api)
+   - Add your API key to `.env.local`:
+   ```
+   NEXT_PUBLIC_TMDB_API_KEY=your_actual_api_key_here
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Run the development server:
+```bash
+npm run dev
+```
 
-## Learn More
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-To learn more about Next.js, take a look at the following resources:
+## TMDB API Setup
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Go to [The Movie Database](https://www.themoviedb.org/)
+2. Create an account or sign in
+3. Go to Settings → API
+4. Request an API key (choose "Developer" option)
+5. Copy your API key and add it to `.env.local`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+```
+front/
+├── src/
+│   ├── app/                 # Next.js app router
+│   ├── components/          # React components
+│   │   ├── Navbar.tsx      # Navigation component
+│   │   ├── HeroSlider.tsx  # Hero section with slider
+│   │   ├── MovieGrid.tsx   # Movie grid with TMDB data
+│   │   └── Footer.tsx      # Footer component
+│   ├── hooks/              # Custom React hooks
+│   │   └── useMovies.ts    # Hook for movie data management
+│   └── lib/                # Utility libraries
+│       └── tmdb.ts         # TMDB API integration
+├── public/                 # Static assets
+└── package.json           # Dependencies and scripts
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Technologies Used
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Next.js 14** - React framework with App Router
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Utility-first CSS framework
+- **Lucide React** - Beautiful icons
+- **TMDB API** - Movie and TV show data
+
+## Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
