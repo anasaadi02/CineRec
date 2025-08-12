@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { TMDBMovie, tmdbImageUrl } from '@/lib/tmdb';
 import { useMovies, useTVShows } from '@/hooks/useMovies';
 import ClientOnly from './ClientOnly';
+import Link from 'next/link';
 
 interface MediaCardProps {
   item: TMDBMovie;
@@ -20,6 +21,7 @@ function MediaCard({ item, genres, type }: MediaCardProps) {
   const primaryGenre = item.genre_ids.length > 0 ? genres[item.genre_ids[0]] || 'Unknown' : 'Unknown';
 
   return (
+    <Link href={`/${type}/${item.id}`}>
     <div className="group relative bg-gray-800 rounded-lg overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl">
       {/* Media Poster */}
       <div className="relative aspect-[2/3] overflow-hidden">
@@ -76,6 +78,7 @@ function MediaCard({ item, genres, type }: MediaCardProps) {
         </div>
       </div>
     </div>
+    </Link>
   );
 }
 

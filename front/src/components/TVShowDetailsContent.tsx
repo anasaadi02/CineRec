@@ -1,0 +1,304 @@
+'use client';
+
+import { useState } from 'react';
+import Image from 'next/image';
+import { Star, Play, Plus, Calendar, Users, Tv } from 'lucide-react';
+import { TMDBTVShowDetails, TMDBCredits, tmdbImageUrl } from '@/lib/tmdb';
+import Navbar from './Navbar';
+import Footer from './Footer';
+
+interface TVShowDetailsContentProps {
+  details: TMDBTVShowDetails;
+  credits: TMDBCredits;
+}
+
+export default function TVShowDetailsContent({ details, credits }: TVShowDetailsContentProps) {
+  const [activeTab, setActiveTab] = useState<'overview' | 'cast' | 'crew' | 'seasons'>('overview');
+
+  const directors = credits.crew.filter(person => person.job === 'Director');
+  const producers = credits.crew.filter(person => person.job === 'Producer');
+  const writers = credits.crew.filter(person => person.department === 'Writing');
+
+  return (
+    <div className="min-h-screen bg-gray-900">
+      <Navbar />
+      
+      {/* Hero Section - Similar to movie but with TV-specific info */}
+      <div className="relative h-[70vh] overflow-hidden">
+        {details.backdrop_path && (
+          <Image
+            src={tmdbImageUrl(details.backdrop_path, 'w780')}
+            alt={details.name || details.title}
+            fill
+            className="object-cover"
+            priority
+          />
+        )}
+        
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent" />
+        
+        {/* Content */}
+        <div className="absolute bottom-0 left-0 right-0 p-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row gap-8 items-end">
+              {/* Poster */}
+              <div className="flex-shrink-0">
+                {details.poster_path && (
+                  <Image
+                    src={tmdbImageUrl(details.poster_path, 'w500')}
+                    alt={details.name || details.title}
+                    width={300}
+                    height={450}
+                    className="rounded-lg shadow-2xl"
+                  />
+                )}
+              </div>
+              
+              {/* Info */}
+              <div className="flex-1 text-white">
+                <h1 className="text-4xl md:text-6xl font-bold mb-4">{details.name || details.title}</h1>
+                
+                {/* Meta Info */}
+                <div className="flex flex-wrap items-center gap-4 mb-4 text-gray-300">
+                  <div className="flex items-center gap-2">
+                    <Star className="h-5 w-5 text-yellow-400 fill-current" />
+                    <span>{details.vote_average.toFixed(1)}</span>
+                    <span className="text-gray-400">({details.vote_count.toLocaleString()})</span>
+                  </div>
+                  
+                  <span>•</span>
+                  
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    <span>{new Date(details.first_air_date || '').getFullYear()}</span>
+                  </div>
+                  
+                  <span>•</span>
+                  
+                  <div className="flex items-center gap-2">
+                    <Tv className="h-4 w-4" />
+                    <span>{details.number_of_seasons} Season{details.number_of_seasons !== 1 ? 's' : ''}</span>
+                  </div>
+                  
+                  <span>•</span>
+                  
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4" />
+                    <span>{details.number_of_episodes} Episodes</span>
+                  </div>
+                </div>
+                
+                {/* Action Buttons */}
+                <div className="flex gap-4 mb-6">
+                  <button className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2 transition-colors">
+                    <Play className="h-5 w-5" />
+                    Watch Now
+                  </button>
+                  <button className="bg-gray-800 hover:bg-gray-700 text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2 transition-colors">
+                    <Plus className="h-5 w-5" />
+                    Add to List
+                  </button>
+                </div>
+                
+                {/* Overview */}
+                <p className="text-gray-300 text-lg leading-relaxed max-w-3xl">
+                  {details.overview}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-8 py-12">
+        {/* Tabs */}
+        <div className="flex border-b border-gray-700 mb-8">
+          {['overview', 'cast', 'crew', 'seasons'].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab as any)}
+              className={`px-6 py-3 font-semibold text-lg transition-colors ${
+                activeTab === tab
+                  ? 'text-red-500 border-b-2 border-red-500'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab Content */}
+        <div className="min-h-[400px]">
+          {activeTab === 'overview' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Show Info */}
+              <div className="bg-gray-800 p-6 rounded-lg">
+                <h3 className="text-xl font-semibold text-white mb-4">Show Information</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Status:</span>
+                    <span className="text-white">{details.status}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Type:</span>
+                    <span className="text-white">TV Series</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">First Aired:</span>
+                    <span className="text-white">
+                      {details.first_air_date ? new Date(details.first_air_date).toLocaleDateString() : 'N/A'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Networks */}
+              <div className="bg-gray-800 p-6 rounded-lg">
+                <h3 className="text-xl font-semibold text-white mb-4">Networks</h3>
+                <div className="space-y-2">
+                  {details.networks?.map((network) => (
+                    <div key={network.id} className="text-gray-300">
+                      {network.name}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Created By */}
+              <div className="bg-gray-800 p-6 rounded-lg">
+                <h3 className="text-xl font-semibold text-white mb-4">Created By</h3>
+                <div className="space-y-2">
+                  {details.created_by?.map((creator) => (
+                    <div key={creator.id} className="text-gray-300">
+                      {creator.name}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'seasons' && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {details.seasons?.map((season) => (
+                <div key={season.id} className="bg-gray-800 rounded-lg overflow-hidden">
+                  {season.poster_path ? (
+                    <Image
+                      src={tmdbImageUrl(season.poster_path, 'w500')}
+                      alt={season.name}
+                      width={300}
+                      height={450}
+                      className="w-full h-48 object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-48 bg-gray-700 flex items-center justify-center">
+                      <span className="text-gray-400">No Image</span>
+                    </div>
+                  )}
+                  <div className="p-4">
+                    <h4 className="text-white font-semibold mb-2">{season.name}</h4>
+                    <div className="text-sm text-gray-400 space-y-1">
+                      <p>{season.episode_count} Episodes</p>
+                      {season.air_date && (
+                        <p>Aired: {new Date(season.air_date).getFullYear()}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Cast and Crew tabs similar to movie component */}
+          {activeTab === 'cast' && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+              {credits.cast.slice(0, 12).map((person) => (
+                <div key={person.id} className="text-center">
+                  <div className="relative w-24 h-24 mx-auto mb-3">
+                    {person.profile_path ? (
+                      <Image
+                        src={tmdbImageUrl(person.profile_path, 'w500')}
+                        alt={person.name}
+                        fill
+                        className="object-cover rounded-full"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-700 rounded-full flex items-center justify-center">
+                        <span className="text-gray-400 text-xs">No Photo</span>
+                      </div>
+                    )}
+                  </div>
+                  <h4 className="text-white font-medium text-sm mb-1">{person.name}</h4>
+                  <p className="text-gray-400 text-xs">{person.character}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {activeTab === 'crew' && (
+            <div className="space-y-6">
+              {directors.length > 0 && (
+                <div>
+                  <h3 className="text-xl font-semibold text-white mb-4">Directors</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+                    {directors.map((person) => (
+                      <div key={person.id} className="text-center">
+                        <div className="relative w-24 h-24 mx-auto mb-3">
+                          {person.profile_path ? (
+                            <Image
+                              src={tmdbImageUrl(person.profile_path, 'w500')}
+                              alt={person.name}
+                              fill
+                              className="object-cover rounded-full"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gray-700 rounded-full flex items-center justify-center">
+                              <span className="text-gray-400 text-xs">No Photo</span>
+                            </div>
+                          )}
+                        </div>
+                        <h4 className="text-white font-medium text-sm">{person.name}</h4>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {producers.length > 0 && (
+                <div>
+                  <h3 className="text-xl font-semibold text-white mb-4">Producers</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+                    {producers.map((person) => (
+                      <div key={person.id} className="text-center">
+                        <div className="relative w-24 h-24 mx-auto mb-3">
+                          {person.profile_path ? (
+                            <Image
+                              src={tmdbImageUrl(person.profile_path, 'w500')}
+                              alt={person.name}
+                              fill
+                              className="object-cover rounded-full"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gray-700 rounded-full flex items-center justify-center">
+                              <span className="text-gray-400 text-xs">No Photo</span>
+                            </div>
+                          )}
+                        </div>
+                        <h4 className="text-white font-medium text-sm">{person.name}</h4>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <Footer />
+    </div>
+  );
+}
