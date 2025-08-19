@@ -9,6 +9,7 @@ import AppError from './utils/appError';
 
 dotenv.config();
 
+
 const app = express();
 
 // 1) GLOBAL MIDDLEWARES

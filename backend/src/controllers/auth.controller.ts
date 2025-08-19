@@ -7,10 +7,17 @@ import { validate, validateLogin, validateRegister } from '../utils/validators';
 
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const { name, email, password, passwordConfirm } = req.body;
+
+    // Additional validation check (though express-validator should catch this)
+    if (password !== passwordConfirm) {
+      return next(new AppError('Passwords do not match', 400));
+    }
+
     const newUser = await User.create({
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password
+      name,
+      email,
+      password
     });
 
     createAndSendToken(newUser, 201, res);
@@ -42,31 +49,5 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
   }
 };
 
-export const protect = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    let token;
-    if (req.cookies.jwt) {
-      token = req.cookies.jwt;
-    }
 
-    if (!token) {
-      return next(new AppError('You are not logged in! Please log in to get access.', 401));
-    }
-
-    // 2) Verification token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string };
-
-    // 3) Check if user still exists
-    const currentUser = await User.findById(decoded.id);
-    if (!currentUser) {
-      return next(new AppError('The user belonging to this token no longer exists.', 401));
-    }
-
-    // GRANT ACCESS TO PROTECTED ROUTE
-    (req as any).user = currentUser;
-    next();
-  } catch (error) {
-    next(error);
-  }
-};
 
