@@ -1,0 +1,23 @@
+{
+  "name": "cinerec",
+  "version": "1.0.0",
+  "description": "CineRec - Movie and TV Show Recommendation App",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "cd front && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "build": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "cd front && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "install:all": "npm install && cd front && npm install && cd ../backend && npm install",
+    "clean": "rimraf front/node_modules backend/node_modules front/.next backend/dist"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "rimraf": "^5.0.5"
+  },
+  "workspaces": [
+    "front",
+    "backend"
+  ]
+}
