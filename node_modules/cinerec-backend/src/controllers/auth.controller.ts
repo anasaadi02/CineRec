@@ -28,7 +28,7 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, rememberMe } = req.body;
 
     // 1) Check if email and password exist
     if (!email || !password) {
@@ -42,8 +42,8 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
       return next(new AppError('Incorrect email or password', 401));
     }
 
-    // 3) If everything ok, send token to client
-    createAndSendToken(user, 200, res);
+    // 3) If everything ok, send token to client with rememberMe option
+    createAndSendToken(user, 200, res, rememberMe);
   } catch (error) {
     next(error);
   }

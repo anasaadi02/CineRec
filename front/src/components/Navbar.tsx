@@ -1,14 +1,39 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { Menu, X, Search, User, LogOut, Settings, ChevronDown } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { Menu, X, User, LogOut, Settings, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useSearchContext } from '@/contexts/SearchContext';
+import SearchInput from './SearchInput';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const { user, isAuthenticated, signOut } = useAuth();
+  const router = useRouter();
+  const { searchQuery, setSearchQuery } = useSearchContext();
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close profile dropdown when route changes
+  useEffect(() => {
+    setIsProfileDropdownOpen(false);
+  }, [router]);
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <nav className="bg-gray-900 text-white shadow-lg sticky top-0 z-50">
@@ -44,17 +69,13 @@ export default function Navbar() {
 
           {/* Search and User Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search movies, series..."
-                className="bg-gray-800 text-white placeholder-gray-400 rounded-full py-2 pl-10 pr-4 w-64 focus:outline-none focus:ring-2 focus:ring-red-500"
-              />
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-            </div>
+            <SearchInput
+              className="w-64"
+              onSearch={(query) => router.push(`/search?q=${encodeURIComponent(query)}`)}
+            />
             
             {isAuthenticated ? (
-              <div className="relative">
+              <div className="relative" ref={profileDropdownRef}>
                 <button
                   onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                   className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors p-2 rounded-lg hover:bg-gray-800"
@@ -147,13 +168,14 @@ export default function Navbar() {
                 Reviews
               </Link>
               <div className="border-t border-gray-700 pt-4">
-                <div className="relative mb-3">
-                  <input
-                    type="text"
-                    placeholder="Search movies, series..."
-                    className="bg-gray-700 text-white placeholder-gray-400 rounded-full py-2 pl-10 pr-4 w-full focus:outline-none focus:ring-2 focus:ring-red-500"
+                <div className="mb-3">
+                  <SearchInput
+                    variant="mobile"
+                    onSearch={(query) => {
+                      router.push(`/search?q=${encodeURIComponent(query)}`);
+                      setIsMenuOpen(false);
+                    }}
                   />
-                  <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                 </div>
                 {isAuthenticated ? (
                   <div className="space-y-2">

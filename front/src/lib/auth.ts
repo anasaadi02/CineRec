@@ -3,6 +3,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/a
 export interface SignInData {
   email: string;
   password: string;
+  rememberMe?: boolean;
 }
 
 export interface SignUpData {
@@ -98,8 +99,20 @@ class AuthService {
   // Helper method to get token from cookies
   getToken(): string | null {
     const cookies = document.cookie.split(';');
-    const jwtCookie = cookies.find(cookie => cookie.trim().startsWith('jwt='));
-    return jwtCookie ? jwtCookie.split('=')[1] : null;
+    for (const cookie of cookies) {
+      const [name, value] = cookie.trim().split('=');
+      if (name === 'jwt') {
+        return value;
+      }
+    }
+    return null;
+  }
+
+  // Method to clear invalid/expired tokens
+  clearInvalidToken(): void {
+    // Clear JWT cookie by setting it to expire in the past
+    document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    localStorage.removeItem('authToken');
   }
 }
 

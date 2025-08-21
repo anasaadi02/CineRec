@@ -11,7 +11,8 @@ export default function SignIn() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
+    rememberMe: false
   });
 
   const { signIn } = useAuth();
@@ -31,9 +32,10 @@ export default function SignIn() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: type === 'checkbox' ? checked : value
     });
   };
 
@@ -108,6 +110,9 @@ export default function SignIn() {
             <label className="flex items-center">
               <input
                 type="checkbox"
+                name="rememberMe"
+                checked={formData.rememberMe}
+                onChange={handleChange}
                 className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-600 rounded bg-gray-800"
               />
               <span className="ml-2 text-sm text-gray-300">Remember me</span>
@@ -179,7 +184,7 @@ export default function SignIn() {
           {/* Sign Up Link */}
           <div className="text-center">
             <p className="text-gray-400">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link
                 href="/auth/signup"
                 className="font-medium text-red-400 hover:text-red-300 transition-colors"

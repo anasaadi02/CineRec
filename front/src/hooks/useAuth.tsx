@@ -30,15 +30,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkAuth = async () => {
     try {
-      if (authService.isAuthenticated()) {
-        const response = await authService.getCurrentUser();
-        setUser(response.data.user);
-        setIsAuthenticated(true);
-      }
+      console.log('🔍 Checking authentication...');
+      // Always try to get user data from backend to validate the token
+      const response = await authService.getCurrentUser();
+      console.log('✅ Authentication successful:', response.data.user);
+      setUser(response.data.user);
+      setIsAuthenticated(true);
     } catch (error) {
       console.error('Auth check failed:', error);
+      // If token is expired/invalid, clear everything
       setUser(null);
       setIsAuthenticated(false);
+      // Clear any invalid cookies
+      authService.clearInvalidToken();
     } finally {
       setIsLoading(false);
     }

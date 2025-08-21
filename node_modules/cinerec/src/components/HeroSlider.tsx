@@ -39,6 +39,7 @@ function HeroContent() {
                 <div className="flex items-center space-x-1">
                   <Star className="h-4 w-4 text-yellow-400 fill-current" />
                   <span className="text-white font-medium">8.5</span>
+                  <span className="text-gray-400 text-sm">(1,234 votes)</span>
                 </div>
               </div>
                 <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
@@ -172,6 +173,7 @@ function HeroContent() {
                 <div className="flex items-center space-x-1">
                   <Star className="h-4 w-4 text-yellow-400 fill-current" />
                   <span className="text-white font-medium">{rating}</span>
+                  <span className="text-gray-400 text-sm">({movie.vote_count?.toLocaleString() || 0} votes)</span>
                 </div>
               </div>
               
@@ -236,6 +238,7 @@ export default function HeroSlider() {
                 <div className="flex items-center space-x-1">
                   <Star className="h-4 w-4 text-yellow-400 fill-current" />
                   <span className="text-white font-medium">8.5</span>
+                  <span className="text-gray-400 text-sm">(1,234 votes)</span>
                 </div>
               </div>
               <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">

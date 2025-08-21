@@ -13,15 +13,22 @@ const signToken = (id: string): string => {
   return jwt.sign({ id }, process.env.JWT_SECRET, options);
 };
 
-export const createAndSendToken = (user: any, statusCode: number, res: Response) => {
+export const createAndSendToken = (user: any, statusCode: number, res: Response, rememberMe?: boolean) => {
   const token = signToken(user._id);
-  const cookieOptions = {
-    expires: new Date(
-      Date.now() + (parseInt(process.env.JWT_COOKIE_EXPIRES_IN || '7') * 24 * 60 * 60 * 1000)
-    ),
+  
+  // Set cookie expiration based on rememberMe
+  let cookieOptions: any = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production'
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict' as const
   };
+
+  if (rememberMe) {
+    // If rememberMe is true, set cookie to expire in 30 days
+    cookieOptions.expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  }
+  // If rememberMe is false or undefined, don't set expires (session cookie)
+  // This means the cookie will expire when the browser is closed
 
   // Remove password from output
   user.password = undefined;
