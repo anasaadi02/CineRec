@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
-import { createAndSendToken } from '../utils/jwt';
+import { createAndSendToken, signToken } from '../utils/jwt';
 import AppError from '../utils/appError';
 import { validate, validateLogin, validateRegister } from '../utils/validators';
 
@@ -49,5 +49,32 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
   }
 };
 
+// Google OAuth callback handler
+export const googleCallback = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = (req as any).user;
+    
+    if (!user) {
+      return res.redirect(`${process.env.FRONTEND_URL}/auth/signin?error=google_auth_failed`);
+    }
 
+    // Create JWT token
+    const token = signToken(user._id.toString());
+    
+    // Set cookie with same options as regular login
+    const cookieOptions: any = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict' as const,
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+    };
+
+    res.cookie('jwt', token, cookieOptions);
+    
+    // Redirect to frontend success page
+    res.redirect(`${process.env.FRONTEND_URL}/auth/google-success`);
+  } catch (error) {
+    next(error);
+  }
+};
 

@@ -37,8 +37,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(response.data.user);
       setIsAuthenticated(true);
     } catch (error) {
-      console.error('Auth check failed:', error);
-      // If token is expired/invalid, clear everything
+      // Silently handle auth failures - user is just not authenticated
+      // Only log if it's not a network error (backend not running)
+      if (error instanceof Error && error.message.includes('Unable to connect')) {
+        console.warn('Backend server is not available. Running in offline mode.');
+      } else {
+        console.error('Auth check failed:', error);
+      }
+      // If token is expired/invalid or backend unavailable, clear everything
       setUser(null);
       setIsAuthenticated(false);
       // Clear any invalid cookies

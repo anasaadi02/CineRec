@@ -4,7 +4,9 @@ import bcrypt from 'bcryptjs';
 export interface IUser extends Document {
   name: string;
   email: string;
-  password: string;
+  password?: string;
+  googleId?: string;
+  provider?: 'local' | 'google';
   passwordChangedAt?: Date;
   comparePassword: (candidatePassword: string) => Promise<boolean>;
   changedPasswordAfter: (JWTTimestamp: number) => boolean;
@@ -19,13 +21,26 @@ const userSchema = new Schema<IUser>({
     lowercase: true,
     trim: true
   },
-  password: { type: String, required: true, select: false },
+  password: { 
+    type: String, 
+    required: function() {
+      return this.provider === 'local';
+    },
+    select: false 
+  },
+  googleId: { type: String, unique: true, sparse: true },
+  provider: { 
+    type: String, 
+    enum: ['local', 'google'], 
+    default: 'local' 
+  },
   passwordChangedAt: { type: Date }
 }, { timestamps: true });
 
-// Hash password before saving
+// Hash password before saving (only for local provider)
 userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
+  if (!this.isModified('password') || this.provider !== 'local') return next();
+  if (!this.password) return next();
   
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);

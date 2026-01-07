@@ -2,7 +2,9 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
+import session from 'express-session';
 import connectDB from './config/db';
+import passport from './config/passport';
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
 import AppError from './utils/appError';
@@ -19,6 +21,24 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
+
+// Session middleware for Passport
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || process.env.JWT_SECRET || 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  })
+);
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 // 2) ROUTES
 app.use('/api/v1/auth', authRoutes);
