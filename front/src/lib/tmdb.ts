@@ -309,61 +309,138 @@ export const getFeaturedMovie = async (): Promise<TMDBMovie> => {
     throw new Error('TMDB API key is not configured');
   }
 
-  // Get the first movie from trending movies for the featured spot
-  const response = await fetch(
-    `${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`
-  );
+  // Fetch from multiple sources and pages to get the best selection
+  // 1. Top rated movies (best quality) - fetch first 2 pages
+  // 2. Popular movies (current relevance) - fetch first 2 pages
+  // Combine and filter for quality, then find the best one
+  
+  const [topRatedPage1, topRatedPage2, popularPage1, popularPage2] = await Promise.all([
+    fetch(`${TMDB_BASE_URL}/movie/top_rated?api_key=${TMDB_API_KEY}&language=en-US&page=1`),
+    fetch(`${TMDB_BASE_URL}/movie/top_rated?api_key=${TMDB_API_KEY}&language=en-US&page=2`),
+    fetch(`${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`),
+    fetch(`${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=2`)
+  ]);
 
-  if (!response.ok) {
+  if (!topRatedPage1.ok || !topRatedPage2.ok || !popularPage1.ok || !popularPage2.ok) {
     throw new Error('Failed to fetch featured movie');
   }
 
-  const data = await response.json();
-  const results = data.results || [];
-  if (results.length === 0) {
-    throw new Error('No popular movies found');
+  const [topRatedData1, topRatedData2, popularData1, popularData2] = await Promise.all([
+    topRatedPage1.json(),
+    topRatedPage2.json(),
+    popularPage1.json(),
+    popularPage2.json()
+  ]);
+  
+  // Combine all results, removing duplicates by ID
+  const allMovies: TMDBMovie[] = [];
+  const seenIds = new Set<number>();
+  
+  const allResults = [
+    ...(topRatedData1.results || []),
+    ...(topRatedData2.results || []),
+    ...(popularData1.results || []),
+    ...(popularData2.results || [])
+  ];
+  
+  allResults.forEach((movie: TMDBMovie) => {
+    if (!seenIds.has(movie.id)) {
+      seenIds.add(movie.id);
+      allMovies.push(movie);
+    }
+  });
+
+  if (allMovies.length === 0) {
+    throw new Error('No movies found');
   }
   
-  // Calculate a weighted score that considers both rating and vote count
-  // This prevents movies with high ratings but very few votes from being selected
-  // 
+  // DATE FILTERING: Only include movies from the last month
+  const oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+  const oneMonthAgoStr = oneMonthAgo.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+  
+  // Filter movies by release date (only last month)
+  const recentMovies = allMovies.filter((movie: TMDBMovie) => {
+    if (!movie.release_date) return false;
+    // Compare dates: movie release date should be >= one month ago
+    return movie.release_date >= oneMonthAgoStr;
+  });
+  
+  // If no movies from last month, expand to last 3 months as fallback
+  let moviesToConsider = recentMovies;
+  if (recentMovies.length === 0) {
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+    const threeMonthsAgoStr = threeMonthsAgo.toISOString().split('T')[0];
+    
+    moviesToConsider = allMovies.filter((movie: TMDBMovie) => {
+      if (!movie.release_date) return false;
+      return movie.release_date >= threeMonthsAgoStr;
+    });
+    
+    if (moviesToConsider.length === 0) {
+      throw new Error('No recent movies found');
+    }
+  }
+  
+  // STRICT FILTERING: Only consider movies that meet quality thresholds
+  // For "Movie of the Month", we want movies that are both highly rated AND popular
+  const MIN_RATING = 7.0;  // Minimum rating threshold
+  const MIN_VOTES = 1000;   // Minimum vote count threshold
+  
+  // First, filter to only high-quality movies (from recent movies)
+  let qualifiedMovies = moviesToConsider.filter((movie: TMDBMovie) => {
+    return movie.vote_average >= MIN_RATING && movie.vote_count >= MIN_VOTES;
+  });
+  
+  // If no movies meet strict criteria, relax slightly (but still maintain quality)
+  if (qualifiedMovies.length === 0) {
+    qualifiedMovies = moviesToConsider.filter((movie: TMDBMovie) => {
+      return movie.vote_average >= 6.5 && movie.vote_count >= 500;
+    });
+  }
+  
+  // If still no movies, use all recent movies but prioritize better ones in scoring
+  if (qualifiedMovies.length === 0) {
+    qualifiedMovies = moviesToConsider;
+  }
+  
+  // Calculate a weighted score that heavily favors both high ratings AND high vote counts
   // Scoring Algorithm:
-  // 1. Movies with < 100 votes get penalized using a quadratic penalty
-  // 2. Movies with >= 100 votes use a weighted formula:
-  //    - 70% weight for rating (vote_average)
-  //    - 30% weight for vote count (normalized to 0-1 scale)
-  // 3. This ensures movies need both good ratings AND sufficient votes to be featured
+  // - Rating component: (rating / 10) ^ 2 - squares the rating to heavily favor higher ratings
+  // - Vote component: log scale normalized vote count
+  // - Combined: 50% rating^2, 50% vote count (both normalized)
   const calculateWeightedScore = (movie: TMDBMovie): number => {
     const rating = movie.vote_average;
     const voteCount = movie.vote_count;
     
-    // Minimum vote threshold to be considered credible
-    const minVotes = 100;
+    // Square the normalized rating to heavily favor higher ratings
+    // A 9.0 rating gets 0.81, while 7.0 gets 0.49 - big difference!
+    const normalizedRating = rating / 10;
+    const ratingScore = Math.pow(normalizedRating, 2);
     
-    // If vote count is below threshold, apply a penalty
-    if (voteCount < minVotes) {
-      const penalty = Math.pow(voteCount / minVotes, 2);
-      return rating * penalty;
-    }
+    // Use logarithmic scale for vote count (handles wide range better)
+    // Normalize to 0-1 scale where 10,000 votes = ~0.8, 100,000 votes = ~1.0
+    const maxExpectedVotes = 100000;
+    const normalizedVoteCount = Math.min(
+      Math.log10(voteCount + 1) / Math.log10(maxExpectedVotes + 1),
+      1
+    );
     
-    // For movies above threshold, use a weighted formula
-    // Rating weight: 70%, Vote count weight: 30%
-    const ratingScore = rating * 0.7;
-    const voteScore = Math.min(voteCount / 1000, 1) * 0.3; // Normalize vote count
+    // Weighted formula: 50% squared rating, 50% vote count
+    // This ensures we need BOTH high rating AND high votes
+    const finalScore = (ratingScore * 0.5) + (normalizedVoteCount * 0.5);
     
-    return ratingScore + voteScore;
+    return finalScore;
   };
   
   // Find the movie with the best weighted score
-  const bestMovie = results.reduce((best: TMDBMovie | null, current: TMDBMovie) => {
-    if (!best) return current;
-    
+  const bestMovie = qualifiedMovies.reduce((best: TMDBMovie, current: TMDBMovie) => {
     const bestScore = calculateWeightedScore(best);
     const currentScore = calculateWeightedScore(current);
     
-    if (currentScore > bestScore) return current;
-    return best;
-  }, results[0] as TMDBMovie | null)!;
+    return currentScore > bestScore ? current : best;
+  });
   
   return bestMovie;
 }; 
