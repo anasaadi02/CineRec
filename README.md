@@ -21,18 +21,12 @@ A modern movie and TV series rating and recommendation website built with Next.j
 
 ### Installation
 
-1. Clone the repository:
-```bash
-git clone <your-repo-url>
-cd front
-```
-
-2. Install dependencies:
+1. Install dependencies:
 ```bash
 npm install
 ```
 
-3. Set up environment variables:
+2. Set up environment variables:
    - Copy `.env.local.example` to `.env.local`
    - Get your TMDB API key from [https://www.themoviedb.org/settings/api](https://www.themoviedb.org/settings/api)
    - Add your API key to `.env.local`:
@@ -40,12 +34,12 @@ npm install
    NEXT_PUBLIC_TMDB_API_KEY=your_actual_api_key_here
    ```
 
-4. Run the development server:
+3. Run the development server:
 ```bash
 npm run dev
 ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## TMDB API Setup
 
