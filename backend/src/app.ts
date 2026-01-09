@@ -33,12 +33,12 @@ app.use(
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     },
-  })
+  }) as any
 );
 
 // Initialize Passport
-app.use(passport.initialize());
-app.use(passport.session());
+app.use(passport.initialize() as any);
+app.use(passport.session() as any);
 
 // 2) ROUTES
 app.use('/api/v1/auth', authRoutes);
