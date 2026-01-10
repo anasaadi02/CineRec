@@ -4,6 +4,7 @@ import User from '../models/User';
 import { createAndSendToken, signToken } from '../utils/jwt';
 import AppError from '../utils/appError';
 import { validate, validateLogin, validateRegister } from '../utils/validators';
+import { createDefaultLists } from '../utils/createDefaultLists';
 
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -19,6 +20,9 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
       email,
       password
     });
+
+    // Create default lists for new user
+    await createDefaultLists(newUser._id);
 
     createAndSendToken(newUser, 201, res);
   } catch (error) {
@@ -57,6 +61,9 @@ export const googleCallback = async (req: Request, res: Response, next: NextFunc
     if (!user) {
       return res.redirect(`${process.env.FRONTEND_URL}/auth/signin?error=google_auth_failed`);
     }
+
+    // Create default lists for new Google OAuth users (idempotent - won't create duplicates)
+    await createDefaultLists(user._id);
 
     // Create JWT token
     const token = signToken(user._id.toString());

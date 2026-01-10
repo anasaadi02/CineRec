@@ -7,6 +7,7 @@ import connectDB from './config/db';
 import passport from './config/passport';
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
+import listRoutes from './routes/list.routes';
 import AppError from './utils/appError';
 
 dotenv.config();
@@ -43,6 +44,7 @@ app.use(passport.session() as any);
 // 2) ROUTES
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/lists', listRoutes);
 
 // 3) ERROR HANDLING
 app.all('*', (req: Request, res: Response, next: NextFunction) => {

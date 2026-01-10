@@ -8,7 +8,7 @@ import { IUser } from '../models/User';
 // Note: Passport also declares user, so we use IUser which is compatible
 // We'll use type assertion where needed to avoid conflicts
 declare module 'express-serve-static-core' {
-  interface Request {
+    interface Request {
     user?: IUser;
   }
 }

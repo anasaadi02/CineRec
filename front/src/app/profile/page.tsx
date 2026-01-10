@@ -391,13 +391,6 @@ export default function ProfilePage() {
                     <Star className="h-5 w-5 text-yellow-500" />
                     <span className="text-gray-300">My Reviews</span>
                   </Link>
-                  <Link
-                    href="/settings"
-                    className="flex items-center space-x-3 px-4 py-3 bg-gray-900 hover:bg-gray-700 rounded-lg transition-colors"
-                  >
-                    <Settings className="h-5 w-5 text-gray-400" />
-                    <span className="text-gray-300">Settings</span>
-                  </Link>
                 </div>
               </div>
 

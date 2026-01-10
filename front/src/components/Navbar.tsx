@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Menu, X, User, LogOut, Settings, ChevronDown } from 'lucide-react';
+import { Menu, X, User, LogOut, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSearchContext } from '@/contexts/SearchContext';
 import SearchInput from './SearchInput';
@@ -59,7 +59,7 @@ export default function Navbar() {
                 TV Series
               </Link>
               <Link href="/watchlist" className="hover:text-red-400 transition-colors px-3 py-2 rounded-md text-sm font-medium">
-                My Watchlist
+                My Lists
               </Link>
               <Link href="/reviews" className="hover:text-red-400 transition-colors px-3 py-2 rounded-md text-sm font-medium">
                 Reviews
@@ -96,14 +96,6 @@ export default function Navbar() {
                     >
                       <User className="h-4 w-4" />
                       <span>Profile</span>
-                    </Link>
-                    <Link 
-                      href="/settings" 
-                      className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
-                      onClick={() => setIsProfileDropdownOpen(false)}
-                    >
-                      <Settings className="h-4 w-4" />
-                      <span>Settings</span>
                     </Link>
                     <div className="border-t border-gray-700 my-1"></div>
                     <button
@@ -162,7 +154,7 @@ export default function Navbar() {
                 TV Series
               </Link>
               <Link href="/watchlist" className="block hover:text-red-400 transition-colors px-3 py-2 rounded-md text-base font-medium">
-                My Watchlist
+                My Lists
               </Link>
               <Link href="/reviews" className="block hover:text-red-400 transition-colors px-3 py-2 rounded-md text-base font-medium">
                 Reviews
@@ -185,13 +177,6 @@ export default function Navbar() {
                     >
                       <User className="h-4 w-4" />
                       <span>Profile</span>
-                    </Link>
-                    <Link 
-                      href="/settings" 
-                      className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors rounded-lg"
-                    >
-                      <Settings className="h-4 w-4" />
-                      <span>Settings</span>
                     </Link>
                     <button
                       onClick={signOut}
