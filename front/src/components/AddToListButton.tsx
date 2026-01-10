@@ -11,6 +11,7 @@ interface AddToListButtonProps {
   posterPath?: string;
   releaseDate?: string;
   onAdd?: () => void;
+  variant?: 'full' | 'icon';
 }
 
 export default function AddToListButton({ 
@@ -18,7 +19,8 @@ export default function AddToListButton({
   title, 
   posterPath, 
   releaseDate,
-  onAdd 
+  onAdd,
+  variant = 'icon'
 }: AddToListButtonProps) {
   const { isAuthenticated } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -97,20 +99,47 @@ export default function AddToListButton({
   return (
     <>
       <button
-        onClick={() => setIsOpen(true)}
-        className="bg-gray-800 hover:bg-gray-700 text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2 transition-colors"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsOpen(true);
+        }}
+        className={
+          variant === 'full'
+            ? "bg-gray-800 hover:bg-gray-700 text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2 transition-colors"
+            : "bg-gray-800/80 hover:bg-gray-700 text-white p-3 rounded-full transition-colors"
+        }
+        title="Add to List"
       >
         <Plus className="h-5 w-5" />
-        Add to List
+        {variant === 'full' && <span>Add to List</span>}
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.target === e.currentTarget) {
+              setIsOpen(false);
+              setError('');
+            }
+          }}
+        >
+          <div 
+            className="bg-gray-800 rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-white">Add to List</h2>
               <button
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   setIsOpen(false);
                   setError('');
                 }}
@@ -145,7 +174,13 @@ export default function AddToListButton({
                     return (
                       <button
                         key={list._id}
-                        onClick={() => !isInList && handleAddToList(list._id)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (!isInList) {
+                            handleAddToList(list._id);
+                          }
+                        }}
                         disabled={isInList || isAdding}
                         className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors ${
                           isInList

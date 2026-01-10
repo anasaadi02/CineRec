@@ -2,9 +2,11 @@
 
 import { Star, Plus, Play, Loader2 } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { TMDBMovie, tmdbImageUrl } from '@/lib/tmdb';
 import { useMovies } from '@/hooks/useMovies';
 import ClientOnly from './ClientOnly';
+import AddToListButton from './AddToListButton';
 
 interface MovieCardProps {
   movie: TMDBMovie;
@@ -18,34 +20,44 @@ function MovieCard({ movie, genres }: MovieCardProps) {
   const primaryGenre = movie.genre_ids.length > 0 ? genres[movie.genre_ids[0]] || 'Unknown' : 'Unknown';
 
   return (
-    <div className="group relative bg-gray-800 rounded-lg overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-      {/* Movie Poster */}
-      <div className="relative aspect-[2/3] overflow-hidden">
-        {movie.poster_path ? (
-          <Image
-            src={tmdbImageUrl(movie.poster_path)}
-            alt={title}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
-          />
-        ) : (
-          <div className="w-full h-full bg-gray-700 flex items-center justify-center">
-            <span className="text-gray-400 text-sm">No Image</span>
+    <Link href={`/movie/${movie.id}`}>
+      <div className="group relative bg-gray-800 rounded-lg overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer">
+        {/* Movie Poster */}
+        <div className="relative aspect-[2/3] overflow-hidden">
+          {movie.poster_path ? (
+            <Image
+              src={tmdbImageUrl(movie.poster_path)}
+              alt={title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-700 flex items-center justify-center">
+              <span className="text-gray-400 text-sm">No Image</span>
+            </div>
+          )}
+          
+          {/* Overlay on Hover */}
+          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+            <div className="flex space-x-3" onClick={(e) => e.stopPropagation()}>
+              <button 
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-full transition-colors"
+              >
+                <Play className="h-5 w-5" />
+              </button>
+              <AddToListButton
+                movieId={movie.id}
+                title={movie.title || movie.name || 'Unknown Title'}
+                posterPath={movie.poster_path}
+                releaseDate={movie.release_date}
+              />
+            </div>
           </div>
-        )}
-        
-        {/* Overlay on Hover */}
-        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-          <div className="flex space-x-3">
-            <button className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-full transition-colors">
-              <Play className="h-5 w-5" />
-            </button>
-            <button className="bg-gray-800/80 hover:bg-gray-700 text-white p-3 rounded-full transition-colors">
-              <Plus className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
 
         {/* Type Badge */}
         <div className="absolute top-2 left-2">

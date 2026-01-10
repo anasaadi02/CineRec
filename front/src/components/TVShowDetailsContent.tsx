@@ -7,6 +7,7 @@ import { TMDBTVShowDetails, TMDBCredits, tmdbImageUrl } from '@/lib/tmdb';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import TrailerPopup from './TrailerPopup';
+import AddToListButton from './AddToListButton';
 
 interface TVShowDetailsContentProps {
   details: TMDBTVShowDetails;
@@ -100,10 +101,13 @@ export default function TVShowDetailsContent({ details, credits }: TVShowDetails
                     <Play className="h-5 w-5" />
                     Watch Trailer
                   </button>
-                  <button className="bg-gray-800 hover:bg-gray-700 text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2 transition-colors">
-                    <Plus className="h-5 w-5" />
-                    Add to List
-                  </button>
+                  <AddToListButton
+                    movieId={details.id}
+                    title={details.name || details.title || 'Unknown Title'}
+                    posterPath={details.poster_path}
+                    releaseDate={details.first_air_date}
+                    variant="full"
+                  />
                 </div>
                 
                 {/* Overview */}

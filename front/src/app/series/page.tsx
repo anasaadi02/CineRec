@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Star, Filter, Grid, List, TrendingUp, Clock, Flame, Award, ArrowUp } from 'lucide-react';
+import { Star, Filter, Grid, List, TrendingUp, Clock, Flame, Award, ArrowUp, Play } from 'lucide-react';
 import { TMDBMovie, tmdbImageUrl } from '@/lib/tmdb';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import Image from 'next/image';
 import { useTVShowCategories, TVShowCategory } from '@/hooks/useTVShowCategories';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
+import AddToListButton from '@/components/AddToListButton';
 
 interface TVShowCategoryConfig {
   id: TVShowCategory;
@@ -127,7 +128,7 @@ export default function SeriesPage() {
 
     return (
       <Link href={`/tv/${tvShow.id}`} className="block">
-        <div className="group relative bg-gray-800 rounded-lg overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+        <div className="group relative bg-gray-800 rounded-lg overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer">
           <div className="relative aspect-[2/3] overflow-hidden">
             {tvShow.poster_path ? (
               <Image
@@ -142,6 +143,27 @@ export default function SeriesPage() {
                 <span className="text-gray-400 text-sm">No Image</span>
               </div>
             )}
+            
+            {/* Overlay on Hover */}
+            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+              <div className="flex space-x-3" onClick={(e) => e.stopPropagation()}>
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-full transition-colors"
+                >
+                  <Play className="h-5 w-5" />
+                </button>
+                <AddToListButton
+                  movieId={tvShow.id}
+                  title={tvShow.name || tvShow.title || 'Unknown Title'}
+                  posterPath={tvShow.poster_path}
+                  releaseDate={tvShow.first_air_date || tvShow.release_date}
+                />
+              </div>
+            </div>
             
             <div className="absolute top-2 right-2 bg-black/70 px-2 py-1 rounded-full flex items-center space-x-1">
               <Star className="h-3 w-3 text-yellow-400 fill-current" />

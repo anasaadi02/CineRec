@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { listsService, List, MovieItem } from '@/lib/lists';
 import Image from 'next/image';
+import Link from 'next/link';
 import { tmdbImageUrl } from '@/lib/tmdb';
 
 export default function MyListsPage() {
@@ -135,42 +136,34 @@ export default function MyListsPage() {
 
   const MovieCard = ({ movie, listId }: { movie: MovieItem; listId: string }) => {
     return (
-      <div className="group relative bg-gray-800 rounded-lg overflow-hidden transition-transform duration-300 hover:scale-105">
-        <div className="relative aspect-[2/3] overflow-hidden">
-          {movie.posterPath ? (
-            <Image
-              src={tmdbImageUrl(movie.posterPath)}
-              alt={movie.title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
-            />
-          ) : (
-            <div className="w-full h-full bg-gray-700 flex items-center justify-center">
-              <Film className="h-12 w-12 text-gray-500" />
-            </div>
-          )}
+      <Link href={`/movie/${movie.movieId}`}>
+        <div className="group relative bg-gray-800 rounded-lg overflow-hidden transition-transform duration-300 hover:scale-105 cursor-pointer">
+          <div className="relative aspect-[2/3] overflow-hidden">
+            {movie.posterPath ? (
+              <Image
+                src={tmdbImageUrl(movie.posterPath)}
+                alt={movie.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-700 flex items-center justify-center">
+                <Film className="h-12 w-12 text-gray-500" />
+              </div>
+            )}
+          </div>
           
-          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-            <button
-              onClick={() => handleRemoveMovie(listId, movie.movieId)}
-              className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-full transition-colors"
-              title="Remove from list"
-            >
-              <X className="h-5 w-5" />
-            </button>
+          <div className="p-3">
+            <h3 className="text-white font-semibold text-sm mb-1 truncate">{movie.title}</h3>
+            {movie.releaseDate && (
+              <p className="text-gray-400 text-xs">
+                {new Date(movie.releaseDate).getFullYear()}
+              </p>
+            )}
           </div>
         </div>
-        
-        <div className="p-3">
-          <h3 className="text-white font-semibold text-sm mb-1 truncate">{movie.title}</h3>
-          {movie.releaseDate && (
-            <p className="text-gray-400 text-xs">
-              {new Date(movie.releaseDate).getFullYear()}
-            </p>
-          )}
-        </div>
-      </div>
+      </Link>
     );
   };
 

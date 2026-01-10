@@ -9,6 +9,7 @@ import SearchSuggestions from './SearchSuggestions';
 import SearchInput from './SearchInput';
 import SearchFilters, { SearchFilters as SearchFiltersType } from './SearchFilters';
 import SearchResultsSkeleton from './SearchResultsSkeleton';
+import AddToListButton from './AddToListButton';
 
 interface SearchResultCardProps {
   item: TMDBMovie;
@@ -44,13 +45,22 @@ function SearchResultCard({ item, genres }: SearchResultCardProps) {
           
           {/* Overlay on Hover */}
           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-            <div className="flex space-x-3">
-              <button className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-full transition-colors">
+            <div className="flex space-x-3" onClick={(e) => e.stopPropagation()}>
+              <button 
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-full transition-colors"
+              >
                 <Play className="h-5 w-5" />
               </button>
-              <button className="bg-gray-800/80 hover:bg-gray-700 text-white p-3 rounded-full transition-colors">
-                <Plus className="h-5 w-5" />
-              </button>
+              <AddToListButton
+                movieId={item.id}
+                title={item.title || item.name || 'Unknown Title'}
+                posterPath={item.poster_path}
+                releaseDate={item.release_date || item.first_air_date}
+              />
             </div>
           </div>
 

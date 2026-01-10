@@ -8,6 +8,7 @@ import { useMovies, useTVShows } from '@/hooks/useMovies';
 import ClientOnly from './ClientOnly';
 import Link from 'next/link';
 import { useTrailerContext } from '@/contexts/TrailerContext';
+import AddToListButton from './AddToListButton';
 
 interface MediaCardProps {
   item: TMDBMovie;
@@ -102,23 +103,28 @@ function MediaCard({ item, genres, type }: MediaCardProps) {
             
             {/* Overlay on Hover */}
             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-              <div className="flex space-x-3">
-                            <button 
-              onClick={handleTrailerClick}
-              disabled={loadingTrailer}
-              className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-full transition-colors disabled:opacity-50"
-            >
-              {loadingTrailer ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : showTrailer ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Play className="h-5 w-5" />
-              )}
-            </button>
-                <button className="bg-gray-800/80 hover:bg-gray-700 text-white p-3 rounded-full transition-colors">
-                  <Plus className="h-5 w-5" />
+              <div className="flex space-x-3" onClick={(e) => e.stopPropagation()}>
+                <button 
+                  onClick={handleTrailerClick}
+                  disabled={loadingTrailer}
+                  className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-full transition-colors disabled:opacity-50"
+                >
+                  {loadingTrailer ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : showTrailer ? (
+                    <X className="h-5 w-5" />
+                  ) : (
+                    <Play className="h-5 w-5" />
+                  )}
                 </button>
+                <div onClick={(e) => e.stopPropagation()}>
+                  <AddToListButton
+                    movieId={item.id}
+                    title={item.title || item.name || 'Unknown Title'}
+                    posterPath={item.poster_path}
+                    releaseDate={item.release_date || item.first_air_date}
+                  />
+                </div>
               </div>
             </div>
 

@@ -117,6 +117,7 @@ export default function MovieDetailsContent({ details, credits }: MovieDetailsCo
                     title={details.title || 'Unknown Title'}
                     posterPath={details.poster_path}
                     releaseDate={details.release_date}
+                    variant="full"
                   />
                 </div>
                 
