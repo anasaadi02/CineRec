@@ -7,6 +7,7 @@ import { TMDBMovie, tmdbImageUrl } from '@/lib/tmdb';
 import { useTVShows } from '@/hooks/useMovies';
 import ClientOnly from './ClientOnly';
 import AddToListButton from './AddToListButton';
+import LikeButton from './LikeButton';
 
 interface TVShowCardProps {
   show: TMDBMovie;
@@ -50,6 +51,12 @@ function TVShowCard({ show, genres }: TVShowCardProps) {
               >
                 <Play className="h-5 w-5" />
               </button>
+              <LikeButton
+                movieId={show.id}
+                title={show.title || show.name || 'Unknown Title'}
+                posterPath={show.poster_path}
+                releaseDate={show.release_date || show.first_air_date}
+              />
               <AddToListButton
                 movieId={show.id}
                 title={show.title || show.name || 'Unknown Title'}

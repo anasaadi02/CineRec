@@ -10,6 +10,7 @@ import SearchInput from './SearchInput';
 import SearchFilters, { SearchFilters as SearchFiltersType } from './SearchFilters';
 import SearchResultsSkeleton from './SearchResultsSkeleton';
 import AddToListButton from './AddToListButton';
+import LikeButton from './LikeButton';
 
 interface SearchResultCardProps {
   item: TMDBMovie;
@@ -55,6 +56,12 @@ function SearchResultCard({ item, genres }: SearchResultCardProps) {
               >
                 <Play className="h-5 w-5" />
               </button>
+              <LikeButton
+                movieId={item.id}
+                title={item.title || item.name || 'Unknown Title'}
+                posterPath={item.poster_path}
+                releaseDate={item.release_date || item.first_air_date}
+              />
               <AddToListButton
                 movieId={item.id}
                 title={item.title || item.name || 'Unknown Title'}

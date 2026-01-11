@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/hooks/useAuth';
+import { listsService } from '@/lib/lists';
 import { 
   User, 
   Mail, 
@@ -25,6 +26,43 @@ import Link from 'next/link';
 export default function ProfilePage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'settings' | 'lists'>('overview');
+  const [stats, setStats] = useState({
+    moviesWatched: 0,
+    reviewsWritten: 0,
+    watchlistItems: 0,
+    favoriteMovies: 0,
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchStats = async () => {
+      try {
+        setLoading(true);
+        // Fetch all lists to get counts
+        const listsResponse = await listsService.getAllLists();
+        const lists = listsResponse.data.lists;
+
+        // Find watchlist and liked list
+        const watchlist = lists.find(list => list.listType === 'watchlist');
+        const likedList = lists.find(list => list.listType === 'liked');
+
+        setStats({
+          moviesWatched: 0, // TODO: Implement watched tracking
+          reviewsWritten: 0, // TODO: Implement reviews tracking
+          watchlistItems: watchlist?.movies.length || 0,
+          favoriteMovies: likedList?.movies.length || 0,
+        });
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, [user]);
 
   if (!user) {
     return null;
@@ -33,14 +71,6 @@ export default function ProfilePage() {
   // Calculate account age (mock data for now)
   const accountCreated = new Date(); // This should come from user data
   const accountAge = Math.floor((Date.now() - accountCreated.getTime()) / (1000 * 60 * 60 * 24));
-
-  // Mock statistics (these should come from backend)
-  const stats = {
-    moviesWatched: 0,
-    reviewsWritten: 0,
-    watchlistItems: 0,
-    favoriteMovies: 0,
-  };
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: User },

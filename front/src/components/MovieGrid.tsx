@@ -7,6 +7,7 @@ import { TMDBMovie, tmdbImageUrl } from '@/lib/tmdb';
 import { useMovies } from '@/hooks/useMovies';
 import ClientOnly from './ClientOnly';
 import AddToListButton from './AddToListButton';
+import LikeButton from './LikeButton';
 
 interface MovieCardProps {
   movie: TMDBMovie;
@@ -50,6 +51,12 @@ function MovieCard({ movie, genres }: MovieCardProps) {
               >
                 <Play className="h-5 w-5" />
               </button>
+              <LikeButton
+                movieId={movie.id}
+                title={movie.title || movie.name || 'Unknown Title'}
+                posterPath={movie.poster_path}
+                releaseDate={movie.release_date}
+              />
               <AddToListButton
                 movieId={movie.id}
                 title={movie.title || movie.name || 'Unknown Title'}

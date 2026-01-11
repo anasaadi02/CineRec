@@ -228,10 +228,23 @@ export const getListByType = async (req: Request, res: Response, next: NextFunct
       return next(new AppError('Invalid list type', 400));
     }
     
-    const list = await List.findOne({ user: user._id, listType: type });
+    let list = await List.findOne({ user: user._id, listType: type });
     
+    // If list doesn't exist, create it (for default lists)
     if (!list) {
-      return next(new AppError('List not found', 404));
+      const listNames: { [key: string]: string } = {
+        watchlist: 'Watchlist',
+        liked: 'Liked',
+        rated: 'Rated'
+      };
+      
+      list = await List.create({
+        name: listNames[type],
+        user: user._id,
+        isDefault: true,
+        listType: type as 'watchlist' | 'liked' | 'rated',
+        movies: []
+      });
     }
     
     res.status(200).json({

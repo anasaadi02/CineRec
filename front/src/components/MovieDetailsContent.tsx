@@ -8,6 +8,7 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import TrailerPopup from './TrailerPopup';
 import AddToListButton from './AddToListButton';
+import LikeButton from './LikeButton';
 
 interface MovieDetailsContentProps {
   details: TMDBMovieDetails;
@@ -112,6 +113,13 @@ export default function MovieDetailsContent({ details, credits }: MovieDetailsCo
                     <Play className="h-5 w-5" />
                     Watch Trailer
                   </button>
+                  <LikeButton
+                    movieId={details.id}
+                    title={details.title || 'Unknown Title'}
+                    posterPath={details.poster_path}
+                    releaseDate={details.release_date}
+                    variant="full"
+                  />
                   <AddToListButton
                     movieId={details.id}
                     title={details.title || 'Unknown Title'}

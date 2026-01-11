@@ -9,6 +9,7 @@ import { useTVShowCategories, TVShowCategory } from '@/hooks/useTVShowCategories
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import AddToListButton from '@/components/AddToListButton';
+import LikeButton from '@/components/LikeButton';
 
 interface TVShowCategoryConfig {
   id: TVShowCategory;
@@ -146,23 +147,29 @@ export default function SeriesPage() {
             
             {/* Overlay on Hover */}
             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-              <div className="flex space-x-3" onClick={(e) => e.stopPropagation()}>
-                <button 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                  className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-full transition-colors"
-                >
-                  <Play className="h-5 w-5" />
-                </button>
-                <AddToListButton
-                  movieId={tvShow.id}
-                  title={tvShow.name || tvShow.title || 'Unknown Title'}
-                  posterPath={tvShow.poster_path}
-                  releaseDate={tvShow.first_air_date || tvShow.release_date}
-                />
-              </div>
+            <div className="flex space-x-3" onClick={(e) => e.stopPropagation()}>
+              <button 
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-full transition-colors"
+              >
+                <Play className="h-5 w-5" />
+              </button>
+              <LikeButton
+                movieId={tvShow.id}
+                title={tvShow.name || tvShow.title || 'Unknown Title'}
+                posterPath={tvShow.poster_path}
+                releaseDate={tvShow.first_air_date || tvShow.release_date}
+              />
+              <AddToListButton
+                movieId={tvShow.id}
+                title={tvShow.name || tvShow.title || 'Unknown Title'}
+                posterPath={tvShow.poster_path}
+                releaseDate={tvShow.first_air_date || tvShow.release_date}
+              />
+            </div>
             </div>
             
             <div className="absolute top-2 right-2 bg-black/70 px-2 py-1 rounded-full flex items-center space-x-1">

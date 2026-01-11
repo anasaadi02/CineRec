@@ -9,6 +9,7 @@ import ClientOnly from './ClientOnly';
 import Link from 'next/link';
 import { useTrailerContext } from '@/contexts/TrailerContext';
 import AddToListButton from './AddToListButton';
+import LikeButton from './LikeButton';
 
 interface MediaCardProps {
   item: TMDBMovie;
@@ -117,7 +118,13 @@ function MediaCard({ item, genres, type }: MediaCardProps) {
                     <Play className="h-5 w-5" />
                   )}
                 </button>
-                <div onClick={(e) => e.stopPropagation()}>
+                <div onClick={(e) => e.stopPropagation()} className="flex space-x-3">
+                  <LikeButton
+                    movieId={item.id}
+                    title={item.title || item.name || 'Unknown Title'}
+                    posterPath={item.poster_path}
+                    releaseDate={item.release_date || item.first_air_date}
+                  />
                   <AddToListButton
                     movieId={item.id}
                     title={item.title || item.name || 'Unknown Title'}
