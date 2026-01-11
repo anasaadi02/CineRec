@@ -5,7 +5,9 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/hooks/useAuth';
-import { listsService } from '@/lib/lists';
+import { listsService, List as ListType, MovieItem } from '@/lib/lists';
+import Image from 'next/image';
+import { tmdbImageUrl } from '@/lib/tmdb';
 import { 
   User, 
   Mail, 
@@ -19,7 +21,8 @@ import {
   Shield,
   LogOut,
   Link as LinkIcon,
-  CheckCircle2
+  CheckCircle2,
+  Film
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -33,6 +36,8 @@ export default function ProfilePage() {
     favoriteMovies: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [lists, setLists] = useState<ListType[]>([]);
+  const [listsLoading, setListsLoading] = useState(true);
 
   useEffect(() => {
     if (!user) return;
@@ -42,11 +47,12 @@ export default function ProfilePage() {
         setLoading(true);
         // Fetch all lists to get counts
         const listsResponse = await listsService.getAllLists();
-        const lists = listsResponse.data.lists;
+        const fetchedLists = listsResponse.data.lists;
+        setLists(fetchedLists);
 
         // Find watchlist and liked list
-        const watchlist = lists.find(list => list.listType === 'watchlist');
-        const likedList = lists.find(list => list.listType === 'liked');
+        const watchlist = fetchedLists.find(list => list.listType === 'watchlist');
+        const likedList = fetchedLists.find(list => list.listType === 'liked');
 
         setStats({
           moviesWatched: 0, // TODO: Implement watched tracking
@@ -58,6 +64,7 @@ export default function ProfilePage() {
         console.error('Error fetching stats:', error);
       } finally {
         setLoading(false);
+        setListsLoading(false);
       }
     };
 
@@ -68,8 +75,8 @@ export default function ProfilePage() {
     return null;
   }
 
-  // Calculate account age (mock data for now)
-  const accountCreated = new Date(); // This should come from user data
+  // Calculate account age from actual user creation date
+  const accountCreated = user.createdAt ? new Date(user.createdAt) : new Date();
   const accountAge = Math.floor((Date.now() - accountCreated.getTime()) / (1000 * 60 * 60 * 24));
 
   const tabs = [
@@ -368,20 +375,153 @@ export default function ProfilePage() {
                     </Link>
                   </div>
 
-                  {/* Favorites */}
+                  {/* All Lists */}
                   <div className="bg-gray-800 rounded-lg p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-xl font-bold text-white">Favorite Movies</h2>
-                      <button className="text-red-400 hover:text-red-300 text-sm font-medium">
-                        View All
-                      </button>
+                      <h2 className="text-xl font-bold text-white">My Lists</h2>
+                      <Link
+                        href="/watchlist"
+                        className="text-red-400 hover:text-red-300 text-sm font-medium"
+                      >
+                        Manage All →
+                      </Link>
                     </div>
-                    <div className="text-center py-12">
-                      <Heart className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-                      <p className="text-gray-400">No favorite movies yet</p>
-                      <p className="text-gray-500 text-sm mt-2">Start adding movies to your favorites!</p>
-                    </div>
+                    {listsLoading ? (
+                      <div className="text-center py-8">
+                        <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-red-500 border-t-transparent"></div>
+                        <p className="text-gray-400 text-sm mt-2">Loading lists...</p>
+                      </div>
+                    ) : lists.length === 0 ? (
+                      <div className="text-center py-12">
+                        <List className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+                        <p className="text-gray-400">No lists yet</p>
+                        <Link
+                          href="/watchlist"
+                          className="text-red-400 hover:text-red-300 text-sm font-medium mt-2 inline-block"
+                        >
+                          Create your first list →
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {lists.map((list) => (
+                          <Link
+                            key={list._id}
+                            href="/watchlist"
+                            className="bg-gray-900 hover:bg-gray-700 rounded-lg p-4 transition-colors group"
+                          >
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center space-x-2">
+                                {list.listType === 'watchlist' && <List className="h-5 w-5 text-blue-500" />}
+                                {list.listType === 'liked' && <Heart className="h-5 w-5 text-pink-500" />}
+                                {list.listType === 'rated' && <Star className="h-5 w-5 text-yellow-500" />}
+                                {!list.listType && <List className="h-5 w-5 text-gray-400" />}
+                                <h3 className="font-semibold text-white group-hover:text-red-400 transition-colors">
+                                  {list.name}
+                                </h3>
+                              </div>
+                              <span className="text-gray-400 text-sm">
+                                {list.movies.length}
+                              </span>
+                            </div>
+                            {list.movies.length > 0 ? (
+                              <div className="grid grid-cols-4 gap-2">
+                                {list.movies.slice(0, 4).map((movie) => (
+                                  <div
+                                    key={movie.movieId}
+                                    className="relative aspect-[2/3] rounded overflow-hidden bg-gray-700"
+                                  >
+                                    {movie.posterPath ? (
+                                      <Image
+                                        src={tmdbImageUrl(movie.posterPath)}
+                                        alt={movie.title}
+                                        fill
+                                        className="object-cover"
+                                        sizes="(max-width: 768px) 25vw, 20vw"
+                                      />
+                                    ) : (
+                                      <div className="w-full h-full flex items-center justify-center">
+                                        <Film className="h-6 w-6 text-gray-500" />
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                                {list.movies.length > 4 && (
+                                  <div className="relative aspect-[2/3] rounded overflow-hidden bg-gray-700 flex items-center justify-center">
+                                    <span className="text-gray-400 text-xs">
+                                      +{list.movies.length - 4}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <p className="text-gray-500 text-sm">Empty list</p>
+                            )}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </div>
+
+                  {/* Favorites Preview */}
+                  {(() => {
+                    const likedList = lists.find(list => list.listType === 'liked');
+                    return (
+                      <div className="bg-gray-800 rounded-lg p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center space-x-3">
+                            <Heart className="h-6 w-6 text-pink-500" />
+                            <h2 className="text-xl font-bold text-white">Favorites</h2>
+                            <span className="text-gray-400">
+                              {likedList?.movies.length || 0} items
+                            </span>
+                          </div>
+                          <Link
+                            href="/watchlist"
+                            className="text-red-400 hover:text-red-300 text-sm font-medium"
+                          >
+                            View All →
+                          </Link>
+                        </div>
+                        {!likedList || likedList.movies.length === 0 ? (
+                          <div className="text-center py-12">
+                            <Heart className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+                            <p className="text-gray-400">No favorites yet</p>
+                            <p className="text-gray-500 text-sm mt-2">Start liking movies and shows!</p>
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                            {likedList.movies.slice(0, 6).map((movie) => (
+                              <Link
+                                key={movie.movieId}
+                                href={`/movie/${movie.movieId}`}
+                                className="group"
+                              >
+                                <div className="relative aspect-[2/3] rounded overflow-hidden bg-gray-700 transition-transform duration-300 group-hover:scale-105">
+                                  {movie.posterPath ? (
+                                    <Image
+                                      src={tmdbImageUrl(movie.posterPath)}
+                                      alt={movie.title}
+                                      fill
+                                      className="object-cover"
+                                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 16vw"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center">
+                                      <Film className="h-8 w-8 text-gray-500" />
+                                    </div>
+                                  )}
+                                </div>
+                                <p className="text-white text-sm mt-2 truncate group-hover:text-red-400 transition-colors">
+                                  {movie.title}
+                                </p>
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
 
                   {/* Recently Watched */}
                   <div className="bg-gray-800 rounded-lg p-6">
