@@ -6,6 +6,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/hooks/useAuth';
 import { listsService, List as ListType, MovieItem } from '@/lib/lists';
+import { ratingsService } from '@/lib/ratings';
 import Image from 'next/image';
 import { tmdbImageUrl } from '@/lib/tmdb';
 import { 
@@ -31,7 +32,7 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'settings' | 'lists'>('overview');
   const [stats, setStats] = useState({
     moviesWatched: 0,
-    reviewsWritten: 0,
+    reviews: 0,
     watchlistItems: 0,
     favoriteMovies: 0,
   });
@@ -54,9 +55,18 @@ export default function ProfilePage() {
         const watchlist = fetchedLists.find(list => list.listType === 'watchlist');
         const likedList = fetchedLists.find(list => list.listType === 'liked');
 
+        // Fetch user's ratings count
+        let ratingsCount = 0;
+        try {
+          const ratingsResponse = await ratingsService.getUserRatings();
+          ratingsCount = ratingsResponse.results || 0;
+        } catch (error) {
+          console.error('Error fetching ratings:', error);
+        }
+
         setStats({
           moviesWatched: 0, // TODO: Implement watched tracking
-          reviewsWritten: 0, // TODO: Implement reviews tracking
+          reviews: ratingsCount,
           watchlistItems: watchlist?.movies.length || 0,
           favoriteMovies: likedList?.movies.length || 0,
         });
@@ -169,8 +179,8 @@ export default function ProfilePage() {
                       </div>
                       <div className="bg-gray-900 rounded-lg p-4 text-center">
                         <Star className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
-                        <div className="text-2xl font-bold text-white">{stats.reviewsWritten}</div>
-                        <div className="text-sm text-gray-400">Reviews Written</div>
+                        <div className="text-2xl font-bold text-white">{stats.reviews}</div>
+                        <div className="text-sm text-gray-400">Reviews</div>
                       </div>
                       <div className="bg-gray-900 rounded-lg p-4 text-center">
                         <List className="h-8 w-8 text-blue-500 mx-auto mb-2" />
@@ -367,7 +377,7 @@ export default function ProfilePage() {
                       <div className="flex items-center justify-between mb-4">
                         <Star className="h-8 w-8 text-yellow-500" />
                         <span className="text-gray-400 group-hover:text-white transition-colors">
-                          {stats.reviewsWritten} reviews
+                          {stats.reviews} reviews
                         </span>
                       </div>
                       <h3 className="text-xl font-bold text-white mb-2">My Reviews</h3>

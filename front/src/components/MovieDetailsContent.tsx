@@ -9,6 +9,7 @@ import Footer from './Footer';
 import TrailerPopup from './TrailerPopup';
 import AddToListButton from './AddToListButton';
 import LikeButton from './LikeButton';
+import RatingButton from './RatingButton';
 
 interface MovieDetailsContentProps {
   details: TMDBMovieDetails;
@@ -119,6 +120,13 @@ export default function MovieDetailsContent({ details, credits }: MovieDetailsCo
                     posterPath={details.poster_path}
                     releaseDate={details.release_date}
                     variant="full"
+                  />
+                  <RatingButton
+                    movieId={details.id}
+                    mediaType="movie"
+                    title={details.title || 'Unknown Title'}
+                    posterPath={details.poster_path}
+                    releaseDate={details.release_date}
                   />
                   <AddToListButton
                     movieId={details.id}
