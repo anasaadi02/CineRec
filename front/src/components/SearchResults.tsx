@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { Star, Plus, Play, Loader2, Search, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -17,7 +18,7 @@ interface SearchResultCardProps {
   genres: { [key: number]: string };
 }
 
-function SearchResultCard({ item, genres }: SearchResultCardProps) {
+const SearchResultCard = memo(function SearchResultCard({ item, genres }: SearchResultCardProps) {
   const title = item.title || item.name || 'Unknown Title';
   const releaseDate = item.release_date || item.first_air_date || '';
   const year = releaseDate ? new Date(releaseDate).getFullYear().toString() : 'N/A';
@@ -37,6 +38,7 @@ function SearchResultCard({ item, genres }: SearchResultCardProps) {
               fill
               className="object-cover"
               sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+              loading="lazy"
             />
           ) : (
             <div className="w-full h-full bg-gray-700 flex items-center justify-center">
@@ -98,7 +100,7 @@ function SearchResultCard({ item, genres }: SearchResultCardProps) {
       </div>
     </Link>
   );
-}
+});
 
 function SearchResultsContent() {
   const { 

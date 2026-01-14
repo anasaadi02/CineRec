@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { TMDBMovie, TMDBResponse } from '@/lib/tmdb';
+import { apiCache, getCacheKey } from '@/lib/cache';
 
 export type MovieCategory = 'popular' | 'top-rated' | 'now-playing' | 'upcoming';
 
@@ -43,6 +44,26 @@ export const useMovieCategories = (
         throw new Error('TMDB API key is not configured');
       }
 
+      // Check cache first
+      const cacheKey = getCacheKey.movies(category, page, selectedGenres);
+      const cached = apiCache.get<TMDBResponse>(cacheKey);
+      if (cached) {
+        const newMovies = cached.results || [];
+        if (append) {
+          setAllMovies(prev => {
+            const existingIds = new Set(prev.map(movie => movie.id));
+            const uniqueNewMovies = newMovies.filter(movie => !existingIds.has(movie.id));
+            return [...prev, ...uniqueNewMovies];
+          });
+        } else {
+          setAllMovies(newMovies);
+        }
+        setHasMore(page < cached.total_pages);
+        setCurrentPage(page);
+        setLoading(false);
+        return;
+      }
+
       const endpoint = categoryEndpoints[category];
       let url = `https://api.themoviedb.org/3/movie/${endpoint}?api_key=${apiKey}&language=en-US&page=${page}`;
       
@@ -57,6 +78,9 @@ export const useMovieCategories = (
       }
 
       const data: TMDBResponse = await response.json();
+      
+      // Cache the response for 5 minutes
+      apiCache.set(cacheKey, data, 5 * 60 * 1000);
       const newMovies = data.results || [];
 
       if (append) {

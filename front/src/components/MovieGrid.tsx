@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { Star, Plus, Play, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -14,7 +15,7 @@ interface MovieCardProps {
   genres: { [key: number]: string };
 }
 
-function MovieCard({ movie, genres }: MovieCardProps) {
+const MovieCard = memo(function MovieCard({ movie, genres }: MovieCardProps) {
   const title = movie.title || movie.name || 'Unknown Title';
   const releaseDate = movie.release_date || movie.first_air_date || '';
   const year = releaseDate ? new Date(releaseDate).getFullYear().toString() : 'N/A';
@@ -32,6 +33,7 @@ function MovieCard({ movie, genres }: MovieCardProps) {
               fill
               className="object-cover"
               sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+              loading="lazy"
             />
           ) : (
             <div className="w-full h-full bg-gray-700 flex items-center justify-center">
@@ -90,7 +92,7 @@ function MovieCard({ movie, genres }: MovieCardProps) {
       </div>
     </div>
   );
-}
+});
 
 function MovieGridContent() {
   const { items: movies, loading, error, genres, hasMore, loadMore } = useMovies();

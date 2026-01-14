@@ -29,9 +29,14 @@ export const useMedia = (
       setLoading(true);
       setError(null);
 
+      // Only fetch genres if not already loaded
+      const genresPromise = Object.keys(genres).length > 0 
+        ? Promise.resolve(genres)
+        : getGenres();
+
       const [itemsResponse, genresResponse] = await Promise.all([
         fetchFunction(page),
-        getGenres()
+        genresPromise
       ]);
 
       const newItems = itemsResponse.results;

@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { Star, Plus, Play, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -14,7 +15,7 @@ interface TVShowCardProps {
   genres: { [key: number]: string };
 }
 
-function TVShowCard({ show, genres }: TVShowCardProps) {
+const TVShowCard = memo(function TVShowCard({ show, genres }: TVShowCardProps) {
   const title = show.title || show.name || 'Unknown Title';
   const releaseDate = show.release_date || show.first_air_date || '';
   const year = releaseDate ? new Date(releaseDate).getFullYear().toString() : 'N/A';
@@ -32,6 +33,7 @@ function TVShowCard({ show, genres }: TVShowCardProps) {
               fill
               className="object-cover"
               sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+              loading="lazy"
             />
           ) : (
             <div className="w-full h-full bg-gray-700 flex items-center justify-center">

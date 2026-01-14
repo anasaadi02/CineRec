@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Star, Filter, Grid, List, TrendingUp, Clock, Flame, Award, ArrowUp } from 'lucide-react';
 import { TMDBMovie, tmdbImageUrl } from '@/lib/tmdb';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -109,16 +109,18 @@ export default function MoviesPage() {
     setSortBy('popularity');
   };
 
-  const sortedMovies = [...movies].sort((a, b) => {
-    switch (sortBy) {
-      case 'rating':
-        return b.vote_average - a.vote_average;
-      case 'date':
-        return new Date(b.release_date).getTime() - new Date(a.release_date).getTime();
-      default:
-        return b.popularity - a.popularity;
-    }
-  });
+  const sortedMovies = useMemo(() => {
+    return [...movies].sort((a, b) => {
+      switch (sortBy) {
+        case 'rating':
+          return (b.vote_average || 0) - (a.vote_average || 0);
+        case 'date':
+          return new Date(b.release_date).getTime() - new Date(a.release_date).getTime();
+        default:
+          return b.popularity - a.popularity;
+      }
+    });
+  }, [movies, sortBy]);
 
   const MovieCard = ({ movie }: { movie: TMDBMovie }) => {
     const title = movie.title || 'Unknown Title';
@@ -197,7 +199,7 @@ export default function MoviesPage() {
               <span className="bg-gray-700 px-2 py-1 rounded text-xs">{primaryGenre}</span>
               <div className="flex items-center space-x-1">
                 <Star className="h-3 w-3 text-yellow-400 fill-current" />
-                <span>{movie.vote_average.toFixed(1)}</span>
+                <span>{(movie.vote_average || 0).toFixed(1)}</span>
               </div>
             </div>
             {movie.overview && (
@@ -395,7 +397,7 @@ export default function MoviesPage() {
             {!hasMore && movies.length > 0 && (
               <div className="text-center mt-12">
                 <div className="text-gray-500 text-sm">
-                  🎬 You've reached the end of the results
+                  🎬 You&apos;ve reached the end of the results
                 </div>
               </div>
             )}

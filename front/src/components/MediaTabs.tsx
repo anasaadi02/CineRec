@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { Star, Plus, Play, Loader2, X } from 'lucide-react';
 import Image from 'next/image';
 import { TMDBMovie, tmdbImageUrl } from '@/lib/tmdb';
@@ -17,7 +17,7 @@ interface MediaCardProps {
   type: 'movie' | 'tv';
 }
 
-function MediaCard({ item, genres, type }: MediaCardProps) {
+const MediaCard = memo(function MediaCard({ item, genres, type }: MediaCardProps) {
   const { playTrailer, stopTrailer, isTrailerActive, getActiveTrailerKey } = useTrailerContext();
   const [loadingTrailer, setLoadingTrailer] = useState(false);
   const title = item.title || item.name || 'Unknown Title';
@@ -95,6 +95,7 @@ function MediaCard({ item, genres, type }: MediaCardProps) {
             fill
             className="object-cover"
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+            loading="lazy"
           />
         ) : (
           <div className="w-full h-full bg-gray-700 flex items-center justify-center">
@@ -165,7 +166,7 @@ function MediaCard({ item, genres, type }: MediaCardProps) {
       </Link>
       
   );
-}
+});
 
 function MoviesTab() {
   const { items: movies, loading, error, genres, hasMore, loadMore } = useMovies();

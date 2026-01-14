@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Star, Filter, Grid, List, TrendingUp, Clock, Flame, Award, ArrowUp, Play } from 'lucide-react';
 import { TMDBMovie, tmdbImageUrl } from '@/lib/tmdb';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -108,16 +108,18 @@ export default function SeriesPage() {
     setSortBy('popularity');
   };
 
-  const sortedTVShows = [...tvShows].sort((a, b) => {
-    switch (sortBy) {
-      case 'rating':
-        return b.vote_average - a.vote_average;
-      case 'date':
-        return new Date(b.first_air_date || b.release_date).getTime() - new Date(a.first_air_date || a.release_date).getTime();
-      default:
-        return b.popularity - a.popularity;
-    }
-  });
+  const sortedTVShows = useMemo(() => {
+    return [...tvShows].sort((a, b) => {
+      switch (sortBy) {
+        case 'rating':
+          return (b.vote_average || 0) - (a.vote_average || 0);
+        case 'date':
+          return new Date(b.first_air_date || b.release_date).getTime() - new Date(a.first_air_date || a.release_date).getTime();
+        default:
+          return b.popularity - a.popularity;
+      }
+    });
+  }, [tvShows, sortBy]);
 
   const TVShowCard = ({ tvShow }: { tvShow: TMDBMovie }) => {
     const title = tvShow.name || tvShow.title || 'Unknown Title';
@@ -223,7 +225,7 @@ export default function SeriesPage() {
               <span className="bg-gray-700 px-2 py-1 rounded text-xs">{primaryGenre}</span>
               <div className="flex items-center space-x-1">
                 <Star className="h-3 w-3 text-yellow-400 fill-current" />
-                <span>{tvShow.vote_average.toFixed(1)}</span>
+                <span>{(tvShow.vote_average || 0).toFixed(1)}</span>
               </div>
             </div>
             {tvShow.overview && (

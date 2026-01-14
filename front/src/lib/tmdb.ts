@@ -1,3 +1,5 @@
+import { apiCache, getCacheKey } from './cache';
+
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
@@ -98,6 +100,12 @@ export const tmdbImageUrl = (path: string, size: 'w500' | 'w780' | 'original' = 
 };
 
 export const getPopularMovies = async (page: number = 1): Promise<TMDBResponse> => {
+  const cacheKey = getCacheKey.movies('popular', page);
+  const cached = apiCache.get<TMDBResponse>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   if (!TMDB_API_KEY) {
     throw new Error('TMDB API key is not configured');
   }
@@ -110,10 +118,19 @@ export const getPopularMovies = async (page: number = 1): Promise<TMDBResponse> 
     throw new Error('Failed to fetch popular movies');
   }
 
-  return response.json();
+  const data = await response.json();
+  // Cache for 5 minutes
+  apiCache.set(cacheKey, data, 5 * 60 * 1000);
+  return data;
 };
 
 export const getTopRatedMovies = async (page: number = 1): Promise<TMDBResponse> => {
+  const cacheKey = getCacheKey.movies('top_rated', page);
+  const cached = apiCache.get<TMDBResponse>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   if (!TMDB_API_KEY) {
     throw new Error('TMDB API key is not configured');
   }
@@ -126,10 +143,18 @@ export const getTopRatedMovies = async (page: number = 1): Promise<TMDBResponse>
     throw new Error('Failed to fetch top rated movies');
   }
 
-  return response.json();
+  const data = await response.json();
+  apiCache.set(cacheKey, data, 5 * 60 * 1000);
+  return data;
 };
 
 export const getNowPlayingMovies = async (page: number = 1): Promise<TMDBResponse> => {
+  const cacheKey = getCacheKey.movies('now_playing', page);
+  const cached = apiCache.get<TMDBResponse>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   if (!TMDB_API_KEY) {
     throw new Error('TMDB API key is not configured');
   }
@@ -142,10 +167,18 @@ export const getNowPlayingMovies = async (page: number = 1): Promise<TMDBRespons
     throw new Error('Failed to fetch now playing movies');
   }
 
-  return response.json();
+  const data = await response.json();
+  apiCache.set(cacheKey, data, 5 * 60 * 1000);
+  return data;
 };
 
 export const getUpcomingMovies = async (page: number = 1): Promise<TMDBResponse> => {
+  const cacheKey = getCacheKey.movies('upcoming', page);
+  const cached = apiCache.get<TMDBResponse>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   if (!TMDB_API_KEY) {
     throw new Error('TMDB API key is not configured');
   }
@@ -158,10 +191,18 @@ export const getUpcomingMovies = async (page: number = 1): Promise<TMDBResponse>
     throw new Error('Failed to fetch upcoming movies');
   }
 
-  return response.json();
+  const data = await response.json();
+  apiCache.set(cacheKey, data, 5 * 60 * 1000);
+  return data;
 };
 
 export const getPopularTVShows = async (page: number = 1): Promise<TMDBResponse> => {
+  const cacheKey = getCacheKey.tvShows('popular', page);
+  const cached = apiCache.get<TMDBResponse>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   if (!TMDB_API_KEY) {
     throw new Error('TMDB API key is not configured');
   }
@@ -174,10 +215,19 @@ export const getPopularTVShows = async (page: number = 1): Promise<TMDBResponse>
     throw new Error('Failed to fetch popular TV shows');
   }
 
-  return response.json();
+  const data = await response.json();
+  // Cache for 5 minutes
+  apiCache.set(cacheKey, data, 5 * 60 * 1000);
+  return data;
 };
 
 export const getTopRatedTVShows = async (page: number = 1): Promise<TMDBResponse> => {
+  const cacheKey = getCacheKey.tvShows('top_rated', page);
+  const cached = apiCache.get<TMDBResponse>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   if (!TMDB_API_KEY) {
     throw new Error('TMDB API key is not configured');
   }
@@ -190,10 +240,18 @@ export const getTopRatedTVShows = async (page: number = 1): Promise<TMDBResponse
     throw new Error('Failed to fetch top rated TV shows');
   }
 
-  return response.json();
+  const data = await response.json();
+  apiCache.set(cacheKey, data, 5 * 60 * 1000);
+  return data;
 };
 
 export const getOnTheAirTVShows = async (page: number = 1): Promise<TMDBResponse> => {
+  const cacheKey = getCacheKey.tvShows('on_the_air', page);
+  const cached = apiCache.get<TMDBResponse>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   if (!TMDB_API_KEY) {
     throw new Error('TMDB API key is not configured');
   }
@@ -206,10 +264,18 @@ export const getOnTheAirTVShows = async (page: number = 1): Promise<TMDBResponse
     throw new Error('Failed to fetch on the air TV shows');
   }
 
-  return response.json();
+  const data = await response.json();
+  apiCache.set(cacheKey, data, 5 * 60 * 1000);
+  return data;
 };
 
 export const getAiringTodayTVShows = async (page: number = 1): Promise<TMDBResponse> => {
+  const cacheKey = getCacheKey.tvShows('airing_today', page);
+  const cached = apiCache.get<TMDBResponse>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   if (!TMDB_API_KEY) {
     throw new Error('TMDB API key is not configured');
   }
@@ -222,7 +288,9 @@ export const getAiringTodayTVShows = async (page: number = 1): Promise<TMDBRespo
     throw new Error('Failed to fetch airing today TV shows');
   }
 
-  return response.json();
+  const data = await response.json();
+  apiCache.set(cacheKey, data, 5 * 60 * 1000);
+  return data;
 };
 
 export const getTrendingAll = async (page: number = 1): Promise<TMDBResponse> => {
@@ -242,6 +310,13 @@ export const getTrendingAll = async (page: number = 1): Promise<TMDBResponse> =>
 };
 
 export const getGenres = async (): Promise<{ [key: number]: string }> => {
+  // Check cache first (genres don't change often, cache for 1 hour)
+  const cacheKey = getCacheKey.genres();
+  const cached = apiCache.get<{ [key: number]: string }>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   if (!TMDB_API_KEY) {
     throw new Error('TMDB API key is not configured');
   }
@@ -267,6 +342,9 @@ export const getGenres = async (): Promise<{ [key: number]: string }> => {
   tvGenres.genres.forEach((genre: { id: number; name: string }) => {
     genres[genre.id] = genre.name;
   });
+
+  // Cache for 1 hour (genres don't change often)
+  apiCache.set(cacheKey, genres, 60 * 60 * 1000);
 
   return genres;
 };
@@ -305,33 +383,26 @@ export const testScoringAlgorithm = () => {
 };
 
 export const getFeaturedMovie = async (): Promise<TMDBMovie> => {
+  // Check cache first (featured movie changes daily, cache for 1 hour)
+  const cacheKey = getCacheKey.featuredMovie();
+  const cached = apiCache.get<TMDBMovie>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   if (!TMDB_API_KEY) {
     throw new Error('TMDB API key is not configured');
   }
 
-  // Fetch from multiple sources and pages to get the best selection
-  // 1. Top rated movies (best quality) - fetch first 2 pages
-  // 2. Popular movies (current relevance) - fetch first 2 pages
-  // Combine and filter for quality, then find the best one
-  
-  const [topRatedPage1, topRatedPage2, popularPage1, popularPage2] = await Promise.all([
-    fetch(`${TMDB_BASE_URL}/movie/top_rated?api_key=${TMDB_API_KEY}&language=en-US&page=1`),
-    fetch(`${TMDB_BASE_URL}/movie/top_rated?api_key=${TMDB_API_KEY}&language=en-US&page=2`),
-    fetch(`${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`),
-    fetch(`${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=2`)
-  ]);
-
-  if (!topRatedPage1.ok || !topRatedPage2.ok || !popularPage1.ok || !popularPage2.ok) {
-    throw new Error('Failed to fetch featured movie');
-  }
-
+  // Use cached popular/top-rated functions instead of direct fetch
+  // This leverages existing caching
   const [topRatedData1, topRatedData2, popularData1, popularData2] = await Promise.all([
-    topRatedPage1.json(),
-    topRatedPage2.json(),
-    popularPage1.json(),
-    popularPage2.json()
+    getTopRatedMovies(1),
+    getTopRatedMovies(2),
+    getPopularMovies(1),
+    getPopularMovies(2)
   ]);
-  
+
   // Combine all results, removing duplicates by ID
   const allMovies: TMDBMovie[] = [];
   const seenIds = new Set<number>();
@@ -518,6 +589,12 @@ export const searchMulti = async (query: string, page: number = 1): Promise<TMDB
     throw new Error('Search query cannot be empty');
   }
 
+  const cacheKey = getCacheKey.search(query, page);
+  const cached = apiCache.get<TMDBResponse>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   const response = await fetch(
     `${TMDB_BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(query)}&page=${page}&include_adult=false`
   );
@@ -526,5 +603,8 @@ export const searchMulti = async (query: string, page: number = 1): Promise<TMDB
     throw new Error('Failed to fetch search results');
   }
 
-  return response.json();
+  const data = await response.json();
+  // Cache search results for 10 minutes
+  apiCache.set(cacheKey, data, 10 * 60 * 1000);
+  return data;
 };
