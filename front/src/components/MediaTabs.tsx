@@ -23,7 +23,7 @@ function MediaCard({ item, genres, type }: MediaCardProps) {
   const title = item.title || item.name || 'Unknown Title';
   const releaseDate = item.release_date || item.first_air_date || '';
   const year = releaseDate ? new Date(releaseDate).getFullYear().toString() : 'N/A';
-  const primaryGenre = item.genre_ids.length > 0 ? genres[item.genre_ids[0]] || 'Unknown' : 'Unknown';
+  const primaryGenre = (item.genre_ids && item.genre_ids.length > 0) ? genres[item.genre_ids[0]] || 'Unknown' : 'Unknown';
   
     const showTrailer = isTrailerActive(item.id, type);
   const trailerKey = getActiveTrailerKey();
@@ -149,7 +149,7 @@ function MediaCard({ item, genres, type }: MediaCardProps) {
             {/* Rating Badge */}
             <div className="absolute top-2 right-2 bg-black/70 px-2 py-1 rounded-full flex items-center space-x-1">
               <Star className="h-3 w-3 text-yellow-400 fill-current" />
-              <span className="text-white text-xs font-medium">{item.vote_average.toFixed(1)}</span>
+              <span className="text-white text-xs font-medium">{(item.vote_average || 0).toFixed(1)}</span>
             </div>
           </div>
 

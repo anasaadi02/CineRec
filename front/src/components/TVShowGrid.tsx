@@ -18,7 +18,7 @@ function TVShowCard({ show, genres }: TVShowCardProps) {
   const title = show.title || show.name || 'Unknown Title';
   const releaseDate = show.release_date || show.first_air_date || '';
   const year = releaseDate ? new Date(releaseDate).getFullYear().toString() : 'N/A';
-  const primaryGenre = show.genre_ids.length > 0 ? genres[show.genre_ids[0]] || 'Unknown' : 'Unknown';
+  const primaryGenre = (show.genre_ids && show.genre_ids.length > 0) ? genres[show.genre_ids[0]] || 'Unknown' : 'Unknown';
 
   return (
     <Link href={`/tv/${show.id}`}>
@@ -76,7 +76,7 @@ function TVShowCard({ show, genres }: TVShowCardProps) {
         {/* Rating Badge */}
         <div className="absolute top-2 right-2 bg-black/70 px-2 py-1 rounded-full flex items-center space-x-1">
           <Star className="h-3 w-3 text-yellow-400 fill-current" />
-          <span className="text-white text-xs font-medium">{show.vote_average.toFixed(1)}</span>
+          <span className="text-white text-xs font-medium">{(show.vote_average || 0).toFixed(1)}</span>
         </div>
       </div>
 

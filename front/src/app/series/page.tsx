@@ -123,8 +123,8 @@ export default function SeriesPage() {
     const title = tvShow.name || tvShow.title || 'Unknown Title';
     const airDate = tvShow.first_air_date || tvShow.release_date || '';
     const year = airDate ? new Date(airDate).getFullYear().toString() : 'N/A';
-    const primaryGenre = tvShow.genre_ids.length > 0 
-      ? genres.find(g => g.id === tvShow.genre_ids[0])?.name || 'Unknown'
+    const primaryGenre = (tvShow.genre_ids && tvShow.genre_ids.length > 0) 
+      ? genres.find(g => g.id === tvShow.genre_ids![0])?.name || 'Unknown'
       : 'Unknown';
 
     return (
@@ -174,7 +174,7 @@ export default function SeriesPage() {
             
             <div className="absolute top-2 right-2 bg-black/70 px-2 py-1 rounded-full flex items-center space-x-1">
               <Star className="h-3 w-3 text-yellow-400 fill-current" />
-              <span className="text-white text-xs font-medium">{tvShow.vote_average.toFixed(1)}</span>
+              <span className="text-white text-xs font-medium">{(tvShow.vote_average || 0).toFixed(1)}</span>
             </div>
           </div>
 
@@ -194,8 +194,8 @@ export default function SeriesPage() {
     const title = tvShow.name || tvShow.title || 'Unknown Title';
     const airDate = tvShow.first_air_date || tvShow.release_date || '';
     const year = airDate ? new Date(airDate).getFullYear().toString() : 'N/A';
-    const primaryGenre = tvShow.genre_ids.length > 0 
-      ? genres.find(g => g.id === tvShow.genre_ids[0])?.name || 'Unknown'
+    const primaryGenre = (tvShow.genre_ids && tvShow.genre_ids.length > 0) 
+      ? genres.find(g => g.id === tvShow.genre_ids![0])?.name || 'Unknown'
       : 'Unknown';
 
     return (

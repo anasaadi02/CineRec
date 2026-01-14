@@ -10,9 +10,9 @@ export interface TMDBMovie {
   backdrop_path: string;
   release_date: string;
   first_air_date?: string;
-  vote_average: number;
-  vote_count: number;
-  genre_ids: number[];
+  vote_average?: number;
+  vote_count?: number;
+  genre_ids?: number[];
   media_type?: 'movie' | 'tv';
   popularity: number;
 }

@@ -68,8 +68,8 @@ export default function TVShowDetailsContent({ details, credits }: TVShowDetails
                 <div className="flex flex-wrap items-center gap-4 mb-4 text-gray-300">
                   <div className="flex items-center gap-2">
                     <Star className="h-5 w-5 text-yellow-400 fill-current" />
-                    <span>{details.vote_average.toFixed(1)}</span>
-                    <span className="text-gray-400">({details.vote_count.toLocaleString()})</span>
+                    <span>{(details.vote_average || 0).toFixed(1)}</span>
+                    <span className="text-gray-400">({(details.vote_count || 0).toLocaleString()})</span>
                   </div>
                   
                   <span>•</span>

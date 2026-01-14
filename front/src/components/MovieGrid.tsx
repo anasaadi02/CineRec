@@ -18,7 +18,7 @@ function MovieCard({ movie, genres }: MovieCardProps) {
   const title = movie.title || movie.name || 'Unknown Title';
   const releaseDate = movie.release_date || movie.first_air_date || '';
   const year = releaseDate ? new Date(releaseDate).getFullYear().toString() : 'N/A';
-  const primaryGenre = movie.genre_ids.length > 0 ? genres[movie.genre_ids[0]] || 'Unknown' : 'Unknown';
+  const primaryGenre = (movie.genre_ids && movie.genre_ids.length > 0) ? genres[movie.genre_ids[0]] || 'Unknown' : 'Unknown';
 
   return (
     <Link href={`/movie/${movie.id}`}>
@@ -76,7 +76,7 @@ function MovieCard({ movie, genres }: MovieCardProps) {
         {/* Rating Badge */}
         <div className="absolute top-2 right-2 bg-black/70 px-2 py-1 rounded-full flex items-center space-x-1">
           <Star className="h-3 w-3 text-yellow-400 fill-current" />
-          <span className="text-white text-xs font-medium">{movie.vote_average.toFixed(1)}</span>
+          <span className="text-white text-xs font-medium">{(movie.vote_average || 0).toFixed(1)}</span>
         </div>
       </div>
 
