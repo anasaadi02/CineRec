@@ -99,9 +99,10 @@ export default function MyListsPage() {
     try {
       setError('');
       await listsService.deleteList(listId);
-      setLists(lists.filter(list => list._id !== listId));
+      const updatedLists = lists.filter(list => list._id !== listId);
+      setLists(updatedLists);
       if (selectedList?._id === listId) {
-        setSelectedList(lists.find(list => list._id !== listId) || null);
+        setSelectedList(updatedLists.length > 0 ? updatedLists[0] : null);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete list');

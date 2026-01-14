@@ -8,7 +8,7 @@ import { useMovies, useTVShows } from '@/hooks/useMovies';
 import ClientOnly from './ClientOnly';
 import Link from 'next/link';
 import { useTrailerContext } from '@/contexts/TrailerContext';
-import AddToListButton from './AddToListButton';
+import WatchlistButton from './WatchlistButton';
 import LikeButton from './LikeButton';
 
 interface MediaCardProps {
@@ -125,7 +125,7 @@ function MediaCard({ item, genres, type }: MediaCardProps) {
                     posterPath={item.poster_path}
                     releaseDate={item.release_date || item.first_air_date}
                   />
-                  <AddToListButton
+                  <WatchlistButton
                     movieId={item.id}
                     title={item.title || item.name || 'Unknown Title'}
                     posterPath={item.poster_path}

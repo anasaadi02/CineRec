@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { TMDBMovie, tmdbImageUrl } from '@/lib/tmdb';
 import { useTVShows } from '@/hooks/useMovies';
 import ClientOnly from './ClientOnly';
-import AddToListButton from './AddToListButton';
+import WatchlistButton from './WatchlistButton';
 import LikeButton from './LikeButton';
 
 interface TVShowCardProps {
@@ -57,7 +57,7 @@ function TVShowCard({ show, genres }: TVShowCardProps) {
                 posterPath={show.poster_path}
                 releaseDate={show.release_date || show.first_air_date}
               />
-              <AddToListButton
+              <WatchlistButton
                 movieId={show.id}
                 title={show.title || show.name || 'Unknown Title'}
                 posterPath={show.poster_path}

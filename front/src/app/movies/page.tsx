@@ -300,9 +300,9 @@ export default function MoviesPage() {
                     onChange={(e) => setSortBy(e.target.value as 'popularity' | 'rating' | 'date')}
                     className="appearance-none bg-gray-800 text-white px-4 py-2.5 pr-10 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors cursor-pointer min-w-[140px] hover:border-gray-600 hover:bg-gray-700"
                   >
-                    <option value="popularity">🔥 Popularity</option>
-                    <option value="rating">⭐ Rating</option>
-                    <option value="date">📅 Release Date</option>
+                    <option value="popularity">Popularity</option>
+                    <option value="rating">Rating</option>
+                    <option value="date">Release Date</option>
                   </select>
                   
                   {/* Custom dropdown arrow */}

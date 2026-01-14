@@ -138,10 +138,7 @@ export const deleteList = async (req: Request, res: Response, next: NextFunction
     
     await List.findByIdAndDelete(req.params.id);
     
-    res.status(204).json({
-      status: 'success',
-      data: null
-    });
+    res.status(204).send();
   } catch (error) {
     next(error);
   }

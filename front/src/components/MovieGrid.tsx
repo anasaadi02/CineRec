@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { TMDBMovie, tmdbImageUrl } from '@/lib/tmdb';
 import { useMovies } from '@/hooks/useMovies';
 import ClientOnly from './ClientOnly';
-import AddToListButton from './AddToListButton';
+import WatchlistButton from './WatchlistButton';
 import LikeButton from './LikeButton';
 
 interface MovieCardProps {
@@ -57,7 +57,7 @@ function MovieCard({ movie, genres }: MovieCardProps) {
                 posterPath={movie.poster_path}
                 releaseDate={movie.release_date}
               />
-              <AddToListButton
+              <WatchlistButton
                 movieId={movie.id}
                 title={movie.title || movie.name || 'Unknown Title'}
                 posterPath={movie.poster_path}

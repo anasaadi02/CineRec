@@ -75,6 +75,11 @@ class ListsService {
         throw new Error(errorMessage);
       }
 
+      // Handle 204 No Content responses (no body)
+      if (response.status === 204) {
+        return undefined as any;
+      }
+
       const data = await response.json();
       return data;
     } catch (error) {

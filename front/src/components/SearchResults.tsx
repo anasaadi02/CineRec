@@ -9,7 +9,7 @@ import SearchSuggestions from './SearchSuggestions';
 import SearchInput from './SearchInput';
 import SearchFilters, { SearchFilters as SearchFiltersType } from './SearchFilters';
 import SearchResultsSkeleton from './SearchResultsSkeleton';
-import AddToListButton from './AddToListButton';
+import WatchlistButton from './WatchlistButton';
 import LikeButton from './LikeButton';
 
 interface SearchResultCardProps {
@@ -62,7 +62,7 @@ function SearchResultCard({ item, genres }: SearchResultCardProps) {
                 posterPath={item.poster_path}
                 releaseDate={item.release_date || item.first_air_date}
               />
-              <AddToListButton
+              <WatchlistButton
                 movieId={item.id}
                 title={item.title || item.name || 'Unknown Title'}
                 posterPath={item.poster_path}

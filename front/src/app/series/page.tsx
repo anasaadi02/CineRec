@@ -8,7 +8,7 @@ import Image from 'next/image';
 import { useTVShowCategories, TVShowCategory } from '@/hooks/useTVShowCategories';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
-import AddToListButton from '@/components/AddToListButton';
+import WatchlistButton from '@/components/WatchlistButton';
 import LikeButton from '@/components/LikeButton';
 
 interface TVShowCategoryConfig {
@@ -163,7 +163,7 @@ export default function SeriesPage() {
                 posterPath={tvShow.poster_path}
                 releaseDate={tvShow.first_air_date || tvShow.release_date}
               />
-              <AddToListButton
+              <WatchlistButton
                 movieId={tvShow.id}
                 title={tvShow.name || tvShow.title || 'Unknown Title'}
                 posterPath={tvShow.poster_path}
@@ -326,9 +326,9 @@ export default function SeriesPage() {
                   onChange={(e) => setSortBy(e.target.value as 'popularity' | 'rating' | 'date')}
                   className="appearance-none bg-gray-800 text-white px-4 py-2.5 pr-10 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors cursor-pointer min-w-[140px] hover:border-gray-600 hover:bg-gray-700"
                 >
-                  <option value="popularity">🔥 Popularity</option>
-                  <option value="rating">⭐ Rating</option>
-                  <option value="date">📅 Air Date</option>
+                  <option value="popularity">Popularity</option>
+                  <option value="rating">Rating</option>
+                  <option value="date">Air Date</option>
                 </select>
                 
                 {/* Custom dropdown arrow */}
