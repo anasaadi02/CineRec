@@ -3,6 +3,7 @@
 import { Play, Star, Calendar, Clock, Loader2, X } from 'lucide-react';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import ClientOnly from './ClientOnly';
 import CircularText from './CircularText';
 import { useFeaturedMovie } from '@/hooks/useMovies';
@@ -200,9 +201,12 @@ function HeroContent() {
                   )}
                   <span>{loadingTrailer ? 'Loading...' : showTrailer ? 'Hide Trailer' : 'Watch Trailer'}</span>
                 </button>
-                <button className="border border-white text-white hover:bg-white hover:text-gray-900 px-8 py-3 rounded-lg font-medium transition-colors">
+                <Link 
+                  href={`/movie/${movie.id}`}
+                  className="border border-white text-white hover:bg-white hover:text-gray-900 px-8 py-3 rounded-lg font-medium transition-colors inline-block text-center"
+                >
                   More Info
-                </button>
+                </Link>
               </div>
             </div>
             
