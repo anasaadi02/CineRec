@@ -88,4 +88,6 @@ export const getCacheKey = {
   featuredMovie: () => 'featured:movie',
   movieDetails: (id: number) => `movie:${id}`,
   tvDetails: (id: number) => `tv:${id}`,
+  personDetails: (id: number) => `person:${id}`,
+  personCredits: (id: number) => `person:${id}:credits`,
 };

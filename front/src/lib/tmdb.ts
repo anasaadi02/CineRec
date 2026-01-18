@@ -69,6 +69,36 @@ export interface TMDBCredits {
   crew: TMDBCrewMember[];
 }
 
+export interface TMDBPersonDetails {
+  id: number;
+  name: string;
+  biography: string;
+  birthday: string | null;
+  deathday: string | null;
+  place_of_birth: string | null;
+  profile_path: string | null;
+  known_for_department: string;
+  popularity: number;
+  imdb_id: string | null;
+  homepage: string | null;
+}
+
+export interface TMDBPersonMovieCredit {
+  id: number;
+  title: string;
+  character?: string;
+  job?: string;
+  release_date: string;
+  poster_path: string | null;
+  vote_average: number;
+  media_type: 'movie' | 'tv';
+}
+
+export interface TMDBPersonCredits {
+  cast: TMDBPersonMovieCredit[];
+  crew: TMDBPersonMovieCredit[];
+}
+
 export interface TMDBTVShowDetails extends TMDBMovie {
   number_of_seasons: number;
   number_of_episodes: number;
@@ -515,6 +545,56 @@ export const getFeaturedMovie = async (): Promise<TMDBMovie> => {
   
   return bestMovie;
 }; 
+
+export const getPersonDetails = async (personId: number): Promise<TMDBPersonDetails> => {
+  const cacheKey = getCacheKey.personDetails(personId);
+  const cached = apiCache.get<TMDBPersonDetails>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  if (!TMDB_API_KEY) {
+    throw new Error('TMDB API key is not configured');
+  }
+
+  const response = await fetch(
+    `${TMDB_BASE_URL}/person/${personId}?api_key=${TMDB_API_KEY}&language=en-US`
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch person details');
+  }
+
+  const data = await response.json();
+  // Cache for 1 hour
+  apiCache.set(cacheKey, data, 60 * 60 * 1000);
+  return data;
+};
+
+export const getPersonCredits = async (personId: number): Promise<TMDBPersonCredits> => {
+  const cacheKey = getCacheKey.personCredits(personId);
+  const cached = apiCache.get<TMDBPersonCredits>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  if (!TMDB_API_KEY) {
+    throw new Error('TMDB API key is not configured');
+  }
+
+  const response = await fetch(
+    `${TMDB_BASE_URL}/person/${personId}/combined_credits?api_key=${TMDB_API_KEY}&language=en-US`
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch person credits');
+  }
+
+  const data = await response.json();
+  // Cache for 1 hour
+  apiCache.set(cacheKey, data, 60 * 60 * 1000);
+  return data;
+};
 
 export const getMovieDetails = async (movieId: number): Promise<TMDBMovieDetails> => {
   if (!TMDB_API_KEY) {

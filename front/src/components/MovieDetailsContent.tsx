@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Star, Play, Plus, Clock, DollarSign, Calendar, Users } from 'lucide-react';
 import { TMDBMovieDetails, TMDBCredits, tmdbImageUrl } from '@/lib/tmdb';
 import Navbar from './Navbar';
@@ -230,8 +231,12 @@ export default function MovieDetailsContent({ details, credits }: MovieDetailsCo
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
               {credits?.cast && credits.cast.length > 0 ? (
                 credits.cast.slice(0, 12).map((person) => (
-                  <div key={person.id} className="text-center">
-                    <div className="relative w-24 h-24 mx-auto mb-3">
+                  <Link
+                    key={person.id}
+                    href={`/person/${person.id}`}
+                    className="text-center group cursor-pointer"
+                  >
+                    <div className="relative w-24 h-24 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110">
                       {person.profile_path ? (
                         <Image
                           src={tmdbImageUrl(person.profile_path, 'w500')}
@@ -245,9 +250,11 @@ export default function MovieDetailsContent({ details, credits }: MovieDetailsCo
                         </div>
                       )}
                     </div>
-                    <h4 className="text-white font-medium text-sm mb-1">{person.name}</h4>
+                    <h4 className="text-white font-medium text-sm mb-1 group-hover:text-red-500 transition-colors">
+                      {person.name}
+                    </h4>
                     <p className="text-gray-400 text-xs">{person.character}</p>
-                  </div>
+                  </Link>
                 ))
               ) : (
                 <div className="col-span-full text-center py-12">
@@ -264,8 +271,12 @@ export default function MovieDetailsContent({ details, credits }: MovieDetailsCo
                   <h3 className="text-xl font-semibold text-white mb-4">Directors</h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                     {directors.map((person) => (
-                      <div key={person.id} className="text-center">
-                        <div className="relative w-24 h-24 mx-auto mb-3">
+                      <Link
+                        key={person.id}
+                        href={`/person/${person.id}`}
+                        className="text-center group cursor-pointer"
+                      >
+                        <div className="relative w-24 h-24 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110">
                           {person.profile_path ? (
                             <Image
                               src={tmdbImageUrl(person.profile_path, 'w500')}
@@ -279,8 +290,10 @@ export default function MovieDetailsContent({ details, credits }: MovieDetailsCo
                             </div>
                           )}
                         </div>
-                        <h4 className="text-white font-medium text-sm">{person.name}</h4>
-                      </div>
+                        <h4 className="text-white font-medium text-sm group-hover:text-red-500 transition-colors">
+                          {person.name}
+                        </h4>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -291,8 +304,12 @@ export default function MovieDetailsContent({ details, credits }: MovieDetailsCo
                   <h3 className="text-xl font-semibold text-white mb-4">Producers</h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                     {producers.map((person) => (
-                      <div key={person.id} className="text-center">
-                        <div className="relative w-24 h-24 mx-auto mb-3">
+                      <Link
+                        key={person.id}
+                        href={`/person/${person.id}`}
+                        className="text-center group cursor-pointer"
+                      >
+                        <div className="relative w-24 h-24 mx-auto mb-3 transition-transform duration-300 group-hover:scale-110">
                           {person.profile_path ? (
                             <Image
                               src={tmdbImageUrl(person.profile_path, 'w500')}
@@ -306,8 +323,10 @@ export default function MovieDetailsContent({ details, credits }: MovieDetailsCo
                             </div>
                           )}
                         </div>
-                        <h4 className="text-white font-medium text-sm">{person.name}</h4>
-                      </div>
+                        <h4 className="text-white font-medium text-sm group-hover:text-red-500 transition-colors">
+                          {person.name}
+                        </h4>
+                      </Link>
                     ))}
                   </div>
                 </div>
